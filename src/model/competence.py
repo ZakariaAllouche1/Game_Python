@@ -40,13 +40,16 @@ class Competence(ABC):
 
     def is_within_range(self, user_position: Tuple[int, int], target_position: Tuple[int, int]) -> bool:
         """
-        Vérifie si la cible est à portée de la compétence.
+        Verifie si la cible est a portee de la competence en considerant des portees distinctes pour les axes x et y.
         :param user_position: Position de l'utilisateur (x, y).
         :param target_position: Position de la cible (x, y).
-        :return: True si la cible est à portée, False sinon.
+        :return: True si la cible est a portee, False sinon.
         """
-        distance = abs(target_position[0] - user_position[0]) + abs(target_position[1] - user_position[1])
-        return distance <= self.range[0]  # Utilise la portée maximale définie dans range
+        distance_x = abs(target_position[0] - user_position[0])
+        distance_y = abs(target_position[1] - user_position[1])
+        
+        
+        return distance_x <= self.range[0] or distance_y <= self.range[1]
 
     @abstractmethod
     def activate(self, user, target):
