@@ -1,11 +1,11 @@
 from typing import Tuple
 
-from unit import Unit
-from competence import Competence
+
+from Game_Python.src.model.competence import Competence
 
 
 class Attack(Competence):
-    def __init__(self, name: str, power: int, effect_zone: Tuple[int, int, int], speed: int, range: Tuple[int, int, int], target: Unit):
+    def __init__(self, name: str, power: int, effect_zone: Tuple[int, int, int], speed: int, range: Tuple[int, int, int], target):
         """
         Instanciates an Attack Competence.
         :param name: name of the attack
@@ -23,7 +23,7 @@ class Attack(Competence):
         return self.__target
 
     @target.setter
-    def target(self, target: Unit):
+    def target(self, target):
         self.__target = target
 
     # TODO remplacer par une property (degat) pour simplifier l'attaque de l'unité

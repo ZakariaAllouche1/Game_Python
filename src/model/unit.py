@@ -1,7 +1,7 @@
 import pygame
 import random
 
-from attack import Attack
+from Game_Python.src.model.attack import Attack
 
 # Constantes
 GRID_SIZE = 8
@@ -15,17 +15,18 @@ RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 
-class Unit:
+class Unit(pygame.sprite.Sprite):
     def __init__(self, name: str, x: int, y: int, health: int, team: str, speed: int):
         """
         Instamciates the Units representing the characters/Heros of the game.
         :param name: the name of the Hero
-        :param x: position of the Hero on x axis
-        :param y: position of the Hero on y axis
+        :param x: position of the Hero on x-axis
+        :param y: position of the Hero on y-axis
         :param health: points of health of the Hero
         :param team: the team of the Hero ['Player 1', 'Player 2']
         :param speed: speed of the Hero
         """
+        super().__init__()
         self.__name = name
         self.__x = x
         self.__y = y
@@ -34,9 +35,13 @@ class Unit:
         self.__speed = speed
         self.__movement_range = (0, 0, 0)  # v, h, d
         self.__is_selected = False
-        self.__current_image = None
         self.__competences = {"attacks": [], "defenses": []}
-
+        self.sprite_sheet = pygame.image.load(f'../media/spritesheets/{self.name}.png')
+        self.image = self.get_image(0, 0)
+        self.image.set_colorkey([0, 0, 0])
+        self.rect = self.image.get_rect()
+        self.feet = pygame.Rect(self.x + (self.rect.width * 0.7) /4, self.y + (self.rect.height * 0.75), 0.35 * self.rect.width, 0.15 * self.rect.height)
+        self.old_position = [self.__x, self.__y].copy()
 
     @property
     def name(self):
@@ -76,13 +81,35 @@ class Unit:
         return self.__is_selected
 
     @property
-    def current_image(self):
-        return self.__current_image
+    def image(self):
+        return self.__image
+
+    @x.setter
+    def x(self, x):
+        # TODO ajouter les vérifications selon la screen size
+        self.__x = x
+
+    @y.setter
+    def y(self, y):
+        # TODO ajouter les vérifications selon la screen size
+        self.__y = y
+
+    @image.setter
+    def image(self, image):
+        self.__image = image
 
     @health.setter
     def health(self, damage):
         """Setter pour health - calcul de santé"""
-        self.__health = max(0, self.health - damage)
+        if damage >= 0:
+            self.__health = max(0, self.health - damage)
+
+    def get_image(self, x, y):
+        # TODO automatiser selon les sizes des spritesheets des différents héros : homogéniser
+        image = pygame.Surface([120, 120])
+        image.blit(self.sprite_sheet, (0, 0), (x, y, 120, 120))
+        # return pygame.transform.scale(image, (int(image.get_width() * 0.7), int(image.get_height() * 0.7)))
+        return image
 
     def add_competence(self, competence, type):
         """Ajoute une compétence à l'unité."""
@@ -96,9 +123,11 @@ class Unit:
 
     def move(self, dx, dy):
         """ deplacement de l'unite """
-        if 0 <= self.__x + dx < GRID_SIZE and 0 <= self.__y + dy < GRID_SIZE:
+        # TODO améliorer les vérifications selon la vraie screen size : codée en dur pour le moment (passer par la classe Settings)
+        if 0 <= self.feet.x + dx and self.feet.x + dx + self.feet.width < 1600 and 0 <= self.feet.y + dy and self.feet.y + dy + self.feet.height < 900:
             self.__x += dx
             self.__y += dy
+        self.update()
 
     def attack(self, target, attack):
         """Attaque une unité cible."""
@@ -106,11 +135,23 @@ class Unit:
             if abs(self.x - target.x) <= 1 and abs(self.y - target.y) <= 1:
                 target.health -= self.attack.activate()
 
+    def update(self):
+        self.rect.topleft = (self.x, self.y)
+        self.feet.x = self.x + (self.rect.width * 0.7) / 4
+        self.feet.y = self.y + (self.rect.height * 0.75)
+
+    def move_back(self):
+        self.__x = self.old_position[0]
+        self.__y = self.old_position[1]
+        self.rect.topleft = (self.x, self.y)
+        self.feet.midbottom = self.rect.midbottom
+        self.update()
+
     def draw(self, screen):
         """Affiche l'unité sur l'écran."""
-        color = BLUE if self.team == 'player' else RED
-        if self.is_selected:
-            pygame.draw.rect(screen, GREEN, (self.x * CELL_SIZE,
-                             self.y * CELL_SIZE, CELL_SIZE, CELL_SIZE))
-        pygame.draw.circle(screen, color, (self.x * CELL_SIZE + CELL_SIZE //
-                           2, self.y * CELL_SIZE + CELL_SIZE // 2), CELL_SIZE // 3)
+        screen.blit(self.image, (self.x, self.y))
+        # TODO remove après : Que pour le debug des collisions
+        # pygame.draw.rect(screen, (0, 255, 0), self.feet, 2)  # Vert
+
+    def save_location(self):
+        self.old_position = [self.x, self.y].copy()

@@ -1,7 +1,7 @@
 from abc import ABC
 from typing import Tuple
 
-from competence import Competence
+from Game_Python.src.model.competence import Competence
 
 
 class Defense(Competence):
@@ -30,3 +30,5 @@ class Defense(Competence):
     def __str__(self):
         return f"Defense -- [Nom: {self.name} | Puissance: {self.power}% | Zone: {self.effect_zone} | Vitesse: {self.speed} | Portée: {self.range}]"
 
+    def activate(self):
+        pass
