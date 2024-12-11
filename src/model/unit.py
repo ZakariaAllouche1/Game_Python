@@ -1,13 +1,11 @@
 import pygame
-import random
-
-from Game_Python.src.model.attack import Attack
+from src.model.attack import Attack
 
 # Constantes
 GRID_SIZE = 8
 CELL_SIZE = 60
-WIDTH = GRID_SIZE * CELL_SIZE
-HEIGHT = GRID_SIZE * CELL_SIZE
+SCREEN_WIDTH = GRID_SIZE * CELL_SIZE
+SCREEN_HEIGHT = GRID_SIZE * CELL_SIZE
 FPS = 30
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -30,13 +28,13 @@ class Unit(pygame.sprite.Sprite):
         self.__name = name
         self.__x = x
         self.__y = y
-        self.__health = health
+        self.__health = float(health)
         self.__team = team
         self.__speed = speed
         self.__movement_range = (0, 0, 0)  # v, h, d
         self.__is_selected = False
         self.__competences = {"attacks": [], "defenses": []}
-        self.sprite_sheet = pygame.image.load(f'../media/spritesheets/{self.name}.png')
+        self.sprite_sheet = pygame.image.load(f'media/spritesheets/{self.name}.png')
         self.image = self.get_image(0, 0)
         self.image.set_colorkey([0, 0, 0])
         self.rect = self.image.get_rect()
@@ -51,58 +49,63 @@ class Unit(pygame.sprite.Sprite):
     def x(self):
         return self.__x
 
+    @x.setter
+    def x(self, value):
+        """Maj de pos en x (verification des limites)"""
+        if 0 <= value < SCREEN_WIDTH:
+            self.__x = value
+        else:
+            print(f"Position X invalide : {value}")
+
     @property
     def y(self):
         return self.__y
 
-    @property
-    def health(self):
-        """Getter pour health"""
-        return self.__health
-
-    @property
-    def team(self):
-        return self.__team
-
-    @property
-    def speed(self):
-        return self.__speed
-
+    @y.setter
+    def y(self, value):
+        """Maj de position en y (vrification des limites)"""
+        if 0 <= value < SCREEN_HEIGHT:
+            self.__y = value
+        else:
+            print(f"Position Y invalide : {value}")
     @property
     def movement_range(self):
         return self.__movement_range
-
+    
     @property
-    def competences(self):
-        return self.__competences
-
-    @property
-    def is_selected(self):
-        return self.__is_selected
-
-    @property
-    def image(self):
-        return self.__image
-
-    @x.setter
-    def x(self, x):
-        # TODO ajouter les vérifications selon la screen size
-        self.__x = x
-
-    @y.setter
-    def y(self, y):
-        # TODO ajouter les vérifications selon la screen size
-        self.__y = y
-
-    @image.setter
-    def image(self, image):
-        self.__image = image
+    def health(self):
+        return self.__health
 
     @health.setter
     def health(self, damage):
         """Setter pour health - calcul de santé"""
         if damage >= 0:
-            self.__health = max(0, self.health - damage)
+            old_health = self.__health
+            self.__health = max(0, self.__health - damage)
+     
+    @property
+    def image(self):
+        return self.__image
+    
+    @image.setter
+    def image(self, image):
+        self.__image = image
+    
+    @property
+    def competences(self):
+        return self.__competences
+
+    @property
+    def team(self):
+        return self.__team
+    @property
+    def speed(self):
+        return self.__speed
+
+    @property
+    def is_selected(self):
+        return self.__is_selected
+
 
     def get_image(self, x, y):
         # TODO automatiser selon les sizes des spritesheets des différents héros : homogéniser
@@ -121,19 +124,40 @@ class Unit(pygame.sprite.Sprite):
             # TODO log
             print("Cannot add this competence, unknown competence type !")
 
-    def move(self, dx, dy):
-        """ deplacement de l'unite """
+    #def move(self, dx, dy):
+        #""" deplacement de l'unite """
         # TODO améliorer les vérifications selon la vraie screen size : codée en dur pour le moment (passer par la classe Settings)
-        if 0 <= self.feet.x + dx and self.feet.x + dx + self.feet.width < 1600 and 0 <= self.feet.y + dy and self.feet.y + dy + self.feet.height < 900:
-            self.__x += dx
-            self.__y += dy
-        self.update()
+        #if 0 <= self.feet.x + dx and self.feet.x + dx + self.feet.width < 1600 and 0 <= self.feet.y + dy and self.feet.y + dy + self.feet.height < 900:
+            #self.__x += dx
+            #self.__y += dy
+        #self.update()
+
+    def move(self, dx, dy):
+        """Déplace l'unité.(pour tester)"""
+        new_x = self.__x + dx
+        new_y = self.__y + dy
+        if 0 <= new_x < SCREEN_WIDTH and 0 <= new_y < SCREEN_HEIGHT:
+            self.__x = new_x
+            self.__y = new_y
+            print(f"{self.name} se déplace vers ({self.__x}, {self.__y}).")
+        else:
+            print(f"Déplacement impossible pour {self.name} ({new_x}, {new_y} hors limite).")
 
     def attack(self, target, attack):
-        """Attaque une unité cible."""
+        """Effectue une attaque."""
         if isinstance(attack, Attack):
-            if abs(self.x - target.x) <= 1 and abs(self.y - target.y) <= 1:
-                target.health -= self.attack.activate()
+            attack.activate(self, target)
+
+    def activate_defense(self, damage: int) -> int:
+        """
+        Applique les compétences de défense pour réduire les dégâts.
+        :param damage: Dégâts initiaux.
+        :return: Dégâts après réduction.
+        """
+        for defense in self.__competences["defenses"]:
+            defense.activate(self)
+            damage = defense.reduce_damage(damage)  
+        return damage
 
     def update(self):
         self.rect.topleft = (self.x, self.y)

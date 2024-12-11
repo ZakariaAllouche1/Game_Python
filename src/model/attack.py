@@ -1,7 +1,5 @@
 from typing import Tuple
-
-
-from Game_Python.src.model.competence import Competence
+from src.model.competence import Competence
 
 
 class Attack(Competence):
@@ -26,15 +24,15 @@ class Attack(Competence):
     def target(self, target):
         self.__target = target
 
-    # TODO remplacer par une property (degat) pour simplifier l'attaque de l'unité
     def calcul_degat(self, defense_target):
         """"calcule les degats """
-        degat= max(0, self.power - defense_target)
+        degat = max(0, self.power - defense_target)
         return degat
-    
-    def __str__(self):
-        return f"Attack -- [Nom: {self.name} | Puissance: {self.power} | Zone: {self.effect_zone} | Vitesse: {self.speed} | Portée: {self.range} | Cible: {self.target}]"
 
-    def activate(self):
-        # TODO définir comment activer l'attaque, selon si target donne l'unité ennemie ou la case où elle se trouve
-        pass
+    def activate(self, user, target):
+        """active l'attaque"""
+        if self.is_within_range((user.x, user.y), (target.x, target.y)):
+            raw_damage = self.power
+            damage_after_defense = target.activate_defense(raw_damage)
+            target.health = damage_after_defense  
+            

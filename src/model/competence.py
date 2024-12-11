@@ -49,7 +49,7 @@ class Competence(ABC):
         distance_y = abs(target_position[1] - user_position[1])
         
         
-        return distance_x <= self.range[0] or distance_y <= self.range[1]
+        return distance_x <= self.range[0] and distance_y <= self.range[1]
 
     @abstractmethod
     def activate(self, user, target):
