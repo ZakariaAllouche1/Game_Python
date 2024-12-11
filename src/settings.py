@@ -1,3 +1,4 @@
+
 class SingletonMeta(type):
     """Métaclasse pour créer des singletons."""
     _instances = {}
@@ -14,8 +15,14 @@ class Settings(metaclass=SingletonMeta):
         self.screen_width = 800
         self.screen_height = 600
         self.fps = 30
-        self.tile_size = 120
-        self.nb_tiles = 120
+        self.sprite_width = 120
+        self.sprite_height = 120
+        self.animation_speed = 0.1
+        self.effect_speed = 0.01
+        self.tile_width = 32
+        self.tile_height = 32
+        self.nb_tiles_width = 50
+        self.nb_tiles_height = 20
 
     def update_resolution(self, width, height):
         """Mise à jour de la résolution."""

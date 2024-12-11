@@ -2,7 +2,8 @@ import pygame
 import pytmx
 import pyscroll
 
-from Game_Python.src.view.screen import Screen
+from src.settings import Settings
+from src.view.screen import Screen
 
 
 class Map:
@@ -40,13 +41,23 @@ class Map:
     def collisions(self):
         return self.__collisions
 
+    @property
+    def width(self):
+        setting = Settings()
+        return setting.tile_width * self.__zoom_factor * setting.nb_tiles_width
+
+    @property
+    def height(self):
+        setting = Settings()
+        return setting.tile_height * self.__zoom_factor * setting.nb_tiles_height
+
     def switch_map(self, map: str):
         self.__tmx_data = pytmx.load_pygame(f'../media/map/{map}.tmx')
         map_data = pyscroll.data.TiledMapData(self.tmx_data)
         self.__map_layer = pyscroll.BufferedRenderer(map_data, self.screen.get_size())
         self.__group = pyscroll.PyscrollGroup(map_layer=self.map_layer, default_layer=1)
 
-    def update(self, player):
+    def update(self, animation_manager):
         for layer in self.tmx_data.visible_layers:
 
             if isinstance(layer, pytmx.TiledTileLayer):
@@ -54,7 +65,7 @@ class Map:
                     tile = self.tmx_data.get_tile_image_by_gid(gid)
                     if tile is not None:
                         zoomed_tile = pygame.transform.scale(tile, (int(self.tmx_data.tilewidth * self.zoom_factor),
-                             int(self.tmx_data.tileheight * self.zoom_factor)))
+                                                                    int(self.tmx_data.tileheight * self.zoom_factor)))
 
                         zoomed_x = x * self.tmx_data.tilewidth * self.zoom_factor
                         zoomed_y = y * self.tmx_data.tileheight * self.zoom_factor
@@ -62,7 +73,7 @@ class Map:
                         self.screen.display.blit(zoomed_tile, (zoomed_x, zoomed_y))
 
             if layer.name == "PlayerLayer":
-                player.draw(self.screen.display)
+                animation_manager.draw(self.screen.display)
 
     def get_collisions(self):
         for obj in self.tmx_data.objects:
