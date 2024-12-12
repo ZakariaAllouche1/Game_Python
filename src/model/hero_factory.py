@@ -79,3 +79,29 @@ class HeroFactory:
         sprite_conf = HeroFactory.sprite_config(gray.name)
 
         return gray, sprite_conf
+    
+    def Natsu(x, y, team):
+        Natsu = Unit("Natsu", x, y, 130, team, 10)
+
+        Natsu.add_competence(Attack("Fire dragon's iron fist", 35, (3, 3, 0), 10, (4, 4, 0), None), "attack")
+        Natsu.add_competence(Attack("Fire dragon's roar", 50, (5, 3, 0), 10, (5, 4, 0), None), "attack")
+
+        Natsu.add_competence(Defense("Protective flame", 30, (1, 1, 0), 10, (0, 0, 0)), "defense")
+        Natsu.add_competence(Defense("Flame envelope", 40, (2, 1, 0), 10, (0, 0, 0)), "defense")
+
+        sprite_conf = HeroFactory.sprite_config(Natsu.name)
+
+        return Natsu, sprite_conf
+    
+    def Kansuke(x, y, team):
+        Kansuke = Unit("Kansuke", x, y, 110, team, 10)
+
+        Kansuke.add_competence(Attack("Infinite ligh", 25, (4, 4, 0), 10, (4, 4, 0), None), "attack")
+        Kansuke.add_competence(Attack("Holy light", 55, (3, 3, 0), 10, (3, 4, 0), None), "attack")
+
+        Kansuke.add_competence(Defense("Dissipative clarity", 20, (1, 1, 0), 10, (0, 0, 0)), "defense")
+        Kansuke.add_competence(Defense("Protective ray", 35, (2, 2, 0), 10, (0, 0, 0)), "defense")
+
+        sprite_conf = HeroFactory.sprite_config(Kansuke.name)
+
+        return Kansuke, sprite_conf
