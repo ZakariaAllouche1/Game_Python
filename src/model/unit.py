@@ -2,6 +2,8 @@ import pygame
 from pygame import Rect
 
 from src.model.attack import Attack
+from src.settings import Settings
+from src.view.map import Map
 
 # Constantes
 GRID_SIZE = 8
@@ -14,6 +16,7 @@ BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
+
 
 class Unit(pygame.sprite.Sprite):
     def __init__(self, name: str, x: int, y: int, health: int, team: str, speed: int):
@@ -106,36 +109,16 @@ class Unit(pygame.sprite.Sprite):
     def is_selected(self):
         return self.__is_selected
 
-    # @property
-    # def image(self):
-    #     return self.__image
-
-    @x.setter
-    def x(self, x):
-        # TODO ajouter les vérifications selon la screen size
-        self.__x = x
-
-    @y.setter
-    def y(self, y):
-        # TODO ajouter les vérifications selon la screen size
-        self.__y = y
-
-    # @image.setter
-    # def image(self, image):
-    #     self.__image = image
-
     @health.setter
     def health(self, damage):
         """Setter pour health - calcul de santé"""
         if damage >= 0:
             self.__health = max(0, self.health - damage)
 
-    # def get_image(self, x, y):
-    #     # TODO automatiser selon les sizes des spritesheets des différents héros : homogéniser
-    #     image = pygame.Surface([120, 120])
-    #     image.blit(self.sprite_sheet, (0, 0), (x, y, 120, 120))
-    #     # return pygame.transform.scale(image, (int(image.get_width() * 0.7), int(image.get_height() * 0.7)))
-    #     return image
+    @is_selected.setter
+    def is_selected(self, is_selected):
+        self.__is_selected = is_selected
+
 
     def add_competence(self, competence, type):
         """Ajoute une compétence à l'unité."""
@@ -147,19 +130,13 @@ class Unit(pygame.sprite.Sprite):
             # TODO log
             print("Cannot add this competence, unknown competence type !")
 
-    #def move(self, dx, dy):
-        #""" deplacement de l'unite """
-        # TODO améliorer les vérifications selon la vraie screen size : codée en dur pour le moment (passer par la classe Settings)
-        #if 0 <= self.feet.x + dx and self.feet.x + dx + self.feet.width < 1600 and 0 <= self.feet.y + dy and self.feet.y + dy + self.feet.height < 900:
-            #self.__x += dx
-            #self.__y += dy
-        #self.update()
 
-    def move(self, dx, dy, rect: Rect, feet: Rect):
+    def move(self, dx, dy, rect: Rect, feet: Rect, map: Map):
         """Déplace l'unité.(pour tester)"""
+        setting = Settings()
         new_x = self.__x + dx
         new_y = self.__y + dy
-        if 0 <= new_x < SCREEN_WIDTH and 0 <= new_y < SCREEN_HEIGHT:
+        if 0 <= new_x + (setting.sprite_width / 2) <= map.width and 0 <= new_y + (setting.sprite_height / 2)<= map.height:
             self.save_location()
             self.__x = new_x
             self.__y = new_y
@@ -198,27 +175,12 @@ class Unit(pygame.sprite.Sprite):
         feet.midbottom = rect.midbottom
         self.update(rect, feet)
 
-    # def draw(self, screen):
-    #     """Affiche l'unité sur l'écran."""
-    #     screen.blit(self.animation.image, (self.x, self.y))
-    #     if self.animation.effect_image is not None:
-    #         self.animation.effect.draw(screen)
-    #     # TODO remove après : Que pour le debug des collisions
-    #     # pygame.draw.rect(screen, (0, 255, 0), self.feet, 2)  # Vert
 
     def save_location(self):
         self.old_position = [self.x, self.y].copy()
 
     def set_state(self, state, type, effect, target_pos=None):
-        self.state = state
-        if (state == 'attacks' or state == 'defenses') and effect is not None :
-            effect.update(self.x, self.y, type, target_pos)
-
-            # self.animation.current_effect = self.animation.sprite_conf.effects[type]  # Tuple int, int, boolean, int
-            # self.animation.effect_frames = self.animation.extract_frames(self.animation.effects[type], self.animation.current_effect[3], self.animation.current_effect[3], self.animation.current_effect[0], self.animation.current_effect[1])
-            # if self.animation.current_effect[2] and target_pos is not None:
-            #     # Calcul des positions d'interpolation
-            #     self.animation.effect_x = np.linspace(self.x, target_pos[0], len(self.animation.effect_frames))
-            #     self.animation.effect_y = np.linspace(self.y, target_pos[1], len(self.animation.effect_frames))
-            #     self.animation.frame_index = 0
-            #     self.animation.time_since_last_frame = 0
+        if self.state != 'dead':
+            self.state = state
+            if (state == 'attacks' or state == 'defenses') and effect is not None :
+                effect.update(self.x, self.y, state, type, target_pos)

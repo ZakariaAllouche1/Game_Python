@@ -19,10 +19,13 @@ class Settings(metaclass=SingletonMeta):
         self.sprite_height = 120
         self.animation_speed = 0.1
         self.effect_speed = 0.01
-        self.tile_width = 32
-        self.tile_height = 32
+        self.tile_width = 16
+        self.tile_height = 16
         self.nb_tiles_width = 50
         self.nb_tiles_height = 20
+        self.tiles = {'movement_range': [],
+                      'effect_zone': [],
+                      'effect_range': []}
 
     def update_resolution(self, width, height):
         """Mise à jour de la résolution."""

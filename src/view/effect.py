@@ -33,14 +33,10 @@ class Effect:
                     self.__effect_index = 0
                     self.time_since_last_effect = 0
                     self.current_effect = None
-                    # self.effect_frames = []
-                    # self.effect_x = []
-                    # self.effect_y = []
-                    # self.effect_image = None
                     return False
-                self.effect_image = self.effect_frames[self.__effect_index]
-                if orientation == 'left':
-                    self.effect_image = pygame.transform.flip(self.effect_image, True, False)
+            self.effect_image = self.effect_frames[self.__effect_index]
+            if orientation == 'left': # TODO gérer que la position de target soit dans la direction du joueur
+                self.effect_image = pygame.transform.flip(self.effect_image, True, False)
             return True
         return False
 
@@ -69,8 +65,8 @@ class Effect:
     #         print(f"Frame changée : Index={self.effect_index}, Image={self.effect_image}")
     #     return True
 
-    def update(self, x, y, type, target_pos=None):
-        if self.current_effect is None:
+    def update(self, x, y, state, type, target_pos=None):
+        if self.current_effect is None and type in self.sprite_conf.effects:
             self.type = type
             self.current_effect = self.sprite_conf.effects[type]
             self.effect_frames = self.extract_frames(
@@ -80,13 +76,28 @@ class Effect:
                 self.current_effect[0],
                 self.current_effect[1],
             )
-
-            if self.current_effect[2] and target_pos is not None:
-                self.effect_x = np.linspace(x, target_pos[0], len(self.effect_frames))
-                self.effect_y = np.linspace(y, target_pos[1], len(self.effect_frames))
+            if state == 'attacks':
+                if target_pos is not None:
+                    if self.current_effect[2]:
+                        self.effect_x = np.linspace(x, target_pos[0], len(self.effect_frames))
+                        self.effect_y = np.linspace(y, target_pos[1], len(self.effect_frames))
+                    else:
+                        self.effect_x = [target_pos[0]]
+                        self.effect_y = [target_pos[1]]
+                else:
+                    self.current_effect = None
+            elif state == 'defenses':
+                if self.current_effect[2]:
+                    if target_pos is not None:
+                        self.effect_x = [target_pos[0]]
+                        self.effect_y = [target_pos[1]]
+                    else:
+                        self.current_effect = None
+                else:
+                    self.effect_x = [x]
+                    self.effect_y = [y]
             else:
-                self.effect_x = [x]
-                self.effect_y = [y]
+                self.current_effect = None
             print(f"Interpolation X: {self.effect_x}, Y: {self.effect_y}")
             self.__effect_index = 0
             self.time_since_last_effect = 0
@@ -95,18 +106,21 @@ class Effect:
     def draw(self, screen):
         if self and self.effect_image is not None:
             print(
-                f"Rendering frame index: {self.__effect_index} at position ({self.effect_x[self.__effect_index % len(self.effect_x)]}, {self.effect_y[self.__effect_index  % len(self.effect_x)]})")
+                f"Rendering frame index: {self.__effect_index} at position ({self.effect_x[self.__effect_index % len(self.effect_x)]}, {self.effect_y[self.__effect_index % len(self.effect_x)]})")
             screen.blit(self.effect_image, (self.effect_x[self.__effect_index  % len(self.effect_x)], self.effect_y[self.__effect_index  % len(self.effect_x)]))
             # screen.blit(self.effect_image, (100, 100))
     #         % len(self.effect_x)
 
     def extract_frames(self, sprite_sheet, frame_width, frame_height, num_cols, num_rows, start_col=0, start_row=0):
         frames = []
+        scale = 0.7
         for j in range(start_row, num_rows):
             for i in range(start_col, num_cols):
                 x = i * frame_width
                 y = j * frame_height
                 frame = sprite_sheet.subsurface(pygame.Rect(x, y, frame_width, frame_height))
-                pygame.transform.scale(frame, (int(frame.get_width() * 0.7), int(frame.get_height() * 0.7)))
+                if frame_width > 150:
+                    scale = 0.6
+                frame = pygame.transform.scale(frame, (int(frame.get_width() * scale), int(frame.get_height() * scale)))
                 frames.append(frame)
         return frames

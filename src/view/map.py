@@ -44,12 +44,12 @@ class Map:
     @property
     def width(self):
         setting = Settings()
-        return setting.tile_width * self.__zoom_factor * setting.nb_tiles_width
+        return setting.tile_width * (setting.nb_tiles_width - 1) * self.__zoom_factor
 
     @property
     def height(self):
         setting = Settings()
-        return setting.tile_height * self.__zoom_factor * setting.nb_tiles_height
+        return setting.tile_height * (setting.nb_tiles_height - 1) * self.__zoom_factor
 
     def switch_map(self, map: str):
         self.__tmx_data = pytmx.load_pygame(f'../media/map/{map}.tmx')
