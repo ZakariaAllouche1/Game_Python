@@ -80,6 +80,7 @@ class HeroFactory:
 
         return gray, sprite_conf
     
+    @staticmethod
     def Natsu(x, y, team):
         Natsu = Unit("Natsu", x, y, 130, team, 10)
 
@@ -87,12 +88,13 @@ class HeroFactory:
         Natsu.add_competence(Attack("Fire dragon's roar", 50, (5, 3, 0), 10, (5, 4, 0), None), "attack")
 
         Natsu.add_competence(Defense("Protective flame", 30, (1, 1, 0), 10, (0, 0, 0)), "defense")
-        Natsu.add_competence(Defense("Flame envelope", 40, (2, 1, 0), 10, (0, 0, 0)), "defense")
+        Natsu.add_competence(Defense("Flame envelope", 20, (2, 1, 0), 10, (0, 0, 0)), "defense")
 
         sprite_conf = HeroFactory.sprite_config(Natsu.name)
 
         return Natsu, sprite_conf
     
+    @staticmethod
     def Kansuke(x, y, team):
         Kansuke = Unit("Kansuke", x, y, 110, team, 10)
 
@@ -105,3 +107,31 @@ class HeroFactory:
         sprite_conf = HeroFactory.sprite_config(Kansuke.name)
 
         return Kansuke, sprite_conf
+    
+    @staticmethod
+    def Gowther(x, y, team):
+        Gowther = Unit("Gowther", x, y, 120, team, 10)
+
+        Gowther.add_competence(Attack("Darkness flare bomb", 40, (3, 3, 0), 10, (5, 5, 0), None), "attack")
+        Gowther.add_competence(Attack("Obscurity tentacles", 60, (2, 2, 0), 10, (2, 2, 0), None), "attack")
+
+        Gowther.add_competence(Defense("Shadow rune shield", 35, (1, 1, 0), 10, (0, 0, 0)), "defense")
+        Gowther.add_competence(Defense("Demon aura", 20, (2, 2, 0), 10, (0, 0, 0)), "defense")
+
+        sprite_conf = HeroFactory.sprite_config(Gowther.name)
+
+        return Gowther, sprite_conf
+    
+    @staticmethod
+    def Heisuke(x, y, team):
+        Heisuke = Unit("Heisuke", x, y, 140, team, 10)
+
+        Heisuke.add_competence(Attack("Thunderball", 45, (4, 4, 0), 10, (5, 5, 0), None), "attack")
+        Heisuke.add_competence(Attack("Lightning sabe", 50, (3, 3, 0), 10, (4, 4, 0), None), "attack")
+
+        Heisuke.add_competence(Defense("Regenerative lightning", 15, (1, 1, 0), 10, (0, 0, 0)), "defense")
+        Heisuke.add_competence(Defense("Lightning strike", 10, (2, 2, 0), 10, (0, 0, 0)), "defense")
+
+        sprite_conf = HeroFactory.sprite_config(Heisuke.name)
+
+        return Heisuke, sprite_conf
