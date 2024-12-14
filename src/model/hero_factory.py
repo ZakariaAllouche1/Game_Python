@@ -138,6 +138,7 @@ class HeroFactory:
 
         return heisuke, sprite_conf
 
+
     @staticmethod
     def create_hero(name, x, y, team):
         if name == 'Erza':
