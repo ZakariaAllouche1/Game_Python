@@ -1,3 +1,5 @@
+import pygame
+
 
 class SingletonMeta(type):
     """Métaclasse pour créer des singletons."""
@@ -26,8 +28,19 @@ class Settings(metaclass=SingletonMeta):
         self.tiles = {'movement_range': [],
                       'effect_zone': [],
                       'effect_range': []}
+        self.nb_units_per_player = 3
+        self.team_indexes = {0: [(10, 0), (50, 0), (100, 0)],
+                     1: [(10, 500), (50, 500), (100, 500)]}
+        self.zoom = 2
 
     def update_resolution(self, width, height):
         """Mise à jour de la résolution."""
         self.screen_width = width
         self.screen_height = height
+
+    def create_ui_element(self, name, size, x, y):
+        ui_element = pygame.image.load(f'../media/UI/{name}.png')
+        ui_element = pygame.transform.scale(ui_element, size)
+        ui_element_rect = ui_element.get_rect()
+        ui_element_rect.x, ui_element_rect.y = x, y
+        return ui_element, ui_element_rect

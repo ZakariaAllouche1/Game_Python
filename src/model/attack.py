@@ -1,5 +1,7 @@
 from typing import Tuple
-from competence import Competence
+
+from src.model.competence import Competence
+
 
 class Attack(Competence):
     def __init__(self, name: str, power: int, effect_zone: Tuple[int, int, int], speed: int, range: Tuple[int, int,int], target=None):

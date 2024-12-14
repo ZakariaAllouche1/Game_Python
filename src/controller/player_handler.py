@@ -32,22 +32,26 @@ class PlayerHandler:
                 self.animation_manager.heros[self.name].set_state('movement', 'side', None)
                 self.animation_manager.update_animation(self.animation_manager.heros[self.name], 'movement', 'side')
                 self.animation_manager.set_orientation(self.name, 'left')
+                self.animation_manager.heros[self.name].reset_movement_range()
                 return 'side'
             if pressed[pygame.K_RIGHT]:
                 self.animation_manager.heros[self.name].move(+self.animation_manager.heros[self.name].speed, 0, anim.rect, anim.feet, self.map)
                 self.animation_manager.heros[self.name].set_state('movement', 'side', None)
                 self.animation_manager.update_animation(self.animation_manager.heros[self.name], 'movement', 'side')
                 self.animation_manager.set_orientation(self.name, 'right')
+                self.animation_manager.heros[self.name].reset_movement_range()
                 return 'side'
             if pressed[pygame.K_UP]:
                 self.animation_manager.heros[self.name].move(0, -self.animation_manager.heros[self.name].speed, anim.rect, anim.feet, self.map)
                 self.animation_manager.heros[self.name].set_state('movement', 'up-down', None)
                 self.animation_manager.update_animation(self.animation_manager.heros[self.name], 'movement', 'up-down')
+                self.animation_manager.heros[self.name].reset_movement_range()
                 return 'up-down'
             if pressed[pygame.K_DOWN]:
                 self.animation_manager.heros[self.name].move(0, +self.animation_manager.heros[self.name].speed, anim.rect, anim.feet, self.map)
                 self.animation_manager.heros[self.name].set_state('movement', 'up-down', None)
                 self.animation_manager.update_animation(self.animation_manager.heros[self.name], 'movement', 'up-down')
+                self.animation_manager.heros[self.name].reset_movement_range()
                 return 'up-down'
             else:
                 if not pressed[pygame.K_a] and not pressed[pygame.K_d]:

@@ -55,6 +55,7 @@ class Map:
         self.__tmx_data = pytmx.load_pygame(f'../media/map/{map}.tmx')
         map_data = pyscroll.data.TiledMapData(self.tmx_data)
         self.__map_layer = pyscroll.BufferedRenderer(map_data, self.screen.get_size())
+        self.map_layer.zoom = self.__zoom_factor
         self.__group = pyscroll.PyscrollGroup(map_layer=self.map_layer, default_layer=1)
 
     def update(self, animation_manager):

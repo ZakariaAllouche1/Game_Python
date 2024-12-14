@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import pygame
 from pygame import Rect
 
@@ -19,7 +21,7 @@ GREEN = (0, 255, 0)
 
 
 class Unit(pygame.sprite.Sprite):
-    def __init__(self, name: str, x: int, y: int, health: int, team: str, speed: int):
+    def __init__(self, name: str, x: int, y: int, health: int, team: str, speed: int, range: Tuple[int, int, int] = (2, 3, 1)):
         """
         Instamciates the Units representing the characters/Heros of the game.
         :param name: the name of the Hero
@@ -36,7 +38,9 @@ class Unit(pygame.sprite.Sprite):
         self.__health = float(health)
         self.__team = team
         self.__speed = speed
-        self.__movement_range = (0, 0, 0)  # v, h, d
+        self.start_x = x
+        self.start_y = y
+        self.__movement_range = range  # v, h, d
         self.__is_selected = False
         self.__competences = {"attacks": [], "defenses": []}
         self.state = 'idle'
@@ -140,11 +144,15 @@ class Unit(pygame.sprite.Sprite):
             self.save_location()
             self.__x = new_x
             self.__y = new_y
-            # TODO vérifier si c'est bien là
             self.update(rect, feet)
             print(f"{self.name} se déplace vers ({self.__x}, {self.__y}).")
         else:
             print(f"Déplacement impossible pour {self.name} ({new_x}, {new_y} hors limite).")
+
+    def reset_movement_range(self):
+        """Réinitialise la position de départ pour un nouveau mouvement."""
+        self.start_x = self.__x
+        self.start_y = self.__y
 
     def attack(self, target, attack):
         """Effectue une attaque."""
@@ -184,3 +192,6 @@ class Unit(pygame.sprite.Sprite):
             self.state = state
             if (state == 'attacks' or state == 'defenses') and effect is not None :
                 effect.update(self.x, self.y, state, type, target_pos)
+
+    def __str__(self):
+        return f"Unit -- [Nom: {self.name}]"

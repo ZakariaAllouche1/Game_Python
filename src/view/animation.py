@@ -1,5 +1,8 @@
 import pygame
 
+from src.settings import Settings
+
+
 class Animation:
     def __init__(self, name, x, y, frame_width, frame_height, animation_speed, sprite_conf):
         self.sprite_sheet = pygame.image.load(f'../media/spritesheets/{name}.png')
@@ -77,3 +80,40 @@ class Animation:
                     self.image = pygame.transform.flip(self.__image, True, False)
                 self.time_since_last_frame = 0
         return False
+
+    def get_walkable_tiles(self, movement_range):
+        """
+        Retourne une liste de tiles accessibles centrées autour du sprite.
+        sprite_rect: pygame.Rect - rectangle du sprite.
+        movement_range: (int, int, int) - (vertical, horizontal, diagonal).
+        tile_width, tile_height: Dimensions d'une tile.
+        zoom_factor: Facteur de zoom appliqué à la carte.
+        """
+        settings = Settings()
+        vertical, horizontal, diagonal = movement_range
+
+        # Calculer le centre du sprite
+        center_x = self.rect.x + self.rect.width / 2
+        center_y = self.rect.y + self.rect.height / 2
+
+        # Convertir le centre en coordonnées de tile
+        tile_x = int(center_x / (settings.tile_width * settings.zoom))
+        tile_y = int(center_y / (settings.tile_width * settings.zoom))
+
+        walkable_tiles = []
+
+        # Mouvement vertical
+        for dy in range(-vertical, vertical + 1):
+            walkable_tiles.append((tile_x, tile_y + dy))
+
+        # Mouvement horizontal
+        for dx in range(-horizontal, horizontal + 1):
+            walkable_tiles.append((tile_x + dx, tile_y))
+
+        # Mouvement diagonal
+        for d in range(-diagonal, diagonal + 1):
+            if d != 0:
+                walkable_tiles.append((tile_x + d, tile_y + d))
+                walkable_tiles.append((tile_x + d, tile_y - d))
+
+        return walkable_tiles

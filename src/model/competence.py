@@ -59,5 +59,6 @@ class Competence(ABC):
         """
         pass
 
+
     def __str__(self):
         return f"Competence -- [Nom: {self.name} | Puissance: {self.power} | Zone: {self.effect_zone} | Vitesse: {self.speed} | Portée: {self.range}]"
