@@ -32,6 +32,7 @@ class Settings(metaclass=SingletonMeta):
         self.team_indexes = {0: [(50, 50), (150, 50), (250, 50)],
                      1: [(10, 500), (50, 500), (100, 500)]}
         self.zoom = 2
+        self.path = '../'
 
     def update_resolution(self, width, height):
         """Mise à jour de la résolution."""
@@ -39,7 +40,7 @@ class Settings(metaclass=SingletonMeta):
         self.screen_height = height
 
     def create_ui_element(self, name, size, x, y):
-        ui_element = pygame.image.load(f'../media/UI/{name}.png')
+        ui_element = pygame.image.load(f'{self.path}media/UI/{name}.png')
         ui_element = pygame.transform.scale(ui_element, size)
         ui_element_rect = ui_element.get_rect()
         ui_element_rect.x, ui_element_rect.y = x, y

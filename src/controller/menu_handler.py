@@ -2,7 +2,6 @@ import math
 
 import pygame
 
-from src.controller.player_handler import PlayerHandler
 from src.settings import Settings
 
 
@@ -165,11 +164,11 @@ class MenuHandler:
         # Initialization
         is_running = True
         active = False
-        font = pygame.font.Font('../media/EagleLake-Regular.ttf', 30)
+        font = pygame.font.Font(f'{Settings().path}media/EagleLake-Regular.ttf', 30)
         text = ""
 
         try:
-            input_button = pygame.image.load('media/UI/input.png')
+            input_button = pygame.image.load(f'{Settings().path}media/UI/input.png')
             input_button = pygame.transform.scale(input_button, (400, 150))
             input_rect = input_button.get_rect(center=(screen.get_width() // 2, screen.get_height() // 4))
 
@@ -187,7 +186,7 @@ class MenuHandler:
 
             kansuke_avatar, kansuke_rect = self.settings.create_ui_element('kansuke_avatar', (200, 300), 1280, input_rect.y + input_rect.height + 10)
 
-            ok_button = pygame.image.load('media/UI/ok_button.png')
+            ok_button = pygame.image.load(f'{Settings().path}media/UI/ok_button.png')
             ok_button = pygame.transform.scale(ok_button, (200, 75))
             ok_rect = ok_button.get_rect(center=(screen.get_width() / 2, 3 * screen.get_height() / 4))
 
@@ -229,7 +228,7 @@ class MenuHandler:
             screen.blit(text_surface, (overlay_x, overlay_y))
 
             for x, y in zip(self.x, self.y):
-                screen.blit(pygame.image.load("media/UI/selected.png"), (x, y))
+                screen.blit(pygame.image.load(f"{Settings().path}media/UI/selected.png"), (x, y))
 
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:
@@ -259,65 +258,3 @@ class MenuHandler:
 
     def display_settings(self):
         pass
-
-
-# def run(self, clock, screen, map, animation_manager):
-#     # Initialisation du gestionnaire de joueur
-#
-#     handler = PlayerHandler(unit, animation_manager, map)
-#     is_running = True
-#
-#     while is_running:
-#         # Calcul du delta time pour synchroniser les mises à jour
-#         dt = clock.tick(60) / 1000
-#
-#         # # Gestion des événements utilisateur
-#         for event in pygame.event.get():
-#             if event.type == pygame.KEYDOWN:
-#                 if event.key == pygame.K_END:  # Fin du jeu
-#                     is_running = False
-#                 handler.key_down_event(event, screen.display, dt)
-#
-#         # Gestion continue des touches pressées
-#         handler.key_pressed_event()
-#
-#         # Mise à jour des éléments du jeu
-#         self.update(unit, map, animation_manager)
-#
-#         # Dessin et rendu de l'écran
-#         self.draw(clock, screen, unit, map, animation_manager)
-#
-#     pygame.quit()
-#     print(map.width, map.height)
-#
-# def update(self, unit, map, animation_manager):
-#     map.group.update()
-#     if unit is not None:
-#         anim = animation_manager.get_animation(unit.name)
-#         if anim.feet.collidelist(map.collisions) > -1:
-#             unit.move_back(anim.rect, anim.feet)
-#     map.update(animation_manager) # ajouté
-#
-# def draw(self, clock, screen, unit, map, animation_manager):
-#     dt = clock.tick(60) / 1000
-#     animation = animation_manager.get_animation(unit.name)
-#     effect = animation_manager.get_effect(unit.name)
-#
-#     # Mise à jour
-#     if animation.update(dt, animation_manager.orientation[unit.name]) or (effect and effect.current_effect is not None) :
-#         # if effect and effect.current_effect is not None:
-#         if effect and not effect.apply_effect(dt, animation_manager.orientation[unit.name]):
-#             print("Effect animation completed.")
-#             effect.current_effect = None  # Réinitialiser l'effet une fois terminé
-#
-#     # Rendu (affichage)
-#     map.update(animation_manager)
-#
-#     # Dessiner l'effet
-#     if effect and effect.current_effect is not None:
-#         # print(f"Drawing effect at index {effect.effect_index}")
-#         effect.draw(screen.display)
-#
-#     # Mettre à jour l'écran
-#     pygame.display.flip()
-#

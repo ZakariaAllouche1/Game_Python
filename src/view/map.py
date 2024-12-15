@@ -55,7 +55,7 @@ class Map:
         return setting.tile_height * (setting.nb_tiles_height - 1) * self.__zoom_factor
 
     def switch_map(self, map: str):
-        self.__tmx_data = pytmx.load_pygame(f'media/map/{map}.tmx')
+        self.__tmx_data = pytmx.load_pygame(f'{Settings().path}media/map/{map}.tmx')
         map_data = pyscroll.data.TiledMapData(self.tmx_data)
         self.__map_layer = pyscroll.BufferedRenderer(map_data, self.screen.get_size())
         self.map_layer.zoom = self.__zoom_factor

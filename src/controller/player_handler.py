@@ -107,6 +107,7 @@ class PlayerHandler:
                                                                   self.animation_manager.heros[self.name].name), None)
             self.animation_manager.update_animation(self.player, 'dead', 'dead')
             self.game.check_end_of_turn()
+            self.game.check_game_over()
             return
 
         # Activation de la défense : Toujours afficher l'animation
@@ -126,8 +127,7 @@ class PlayerHandler:
                 self.animation_manager.update_animation(self.player, 'defenses', defense.name)
                 self.player.actions["defend"] = False
                 self.game.check_end_of_turn()
-
-
+                self.game.check_game_over()
             return None
 
         # Gestion des attaques : Toujours afficher l'animation
@@ -153,5 +153,6 @@ class PlayerHandler:
                 self.animation_manager.update_animation(self.player, 'attacks', attack.name)
                 self.player.actions["attack"] = False
                 self.game.check_end_of_turn()
+                self.game.check_game_over()
             self.game.text_info += (f"A: {self.player.competences['defenses'][0]} \n"
                               f"B: {self.player.competences['defenses'][1]} \n")

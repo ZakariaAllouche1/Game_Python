@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -132,6 +133,18 @@ class Game(metaclass=SingletonMeta):
                 if len(self.players_list) == 1:
                     print(f"Le joueur {self.players_list[0]} a gagné la partie!")
                     self.is_running = False
+                    rect = pygame.draw.rect(self.screen.display, (0, 0, 0, 128), pygame.Rect(0, 0, self.settings.screen_width, self.settings.screen_height))
+                    overlay = pygame.Surface((rect.width, rect.height), pygame.SRCALPHA)
+                    overlay.fill((0, 0, 0, 128))
+                    self.screen.display.blit(overlay, (rect.x, rect.y))
+
+                    font = pygame.font.Font(f'{Settings().path}media/EagleLake-Regular.ttf', 20)
+                    text_surface = font.render(f"Game Over {player_name}!", True, (255, 255, 255))
+
+                    self.screen.display.blit(text_surface, (500, 300))
+
+                    pygame.display.flip()
+                    time.sleep(20)
                     return True
         return False
 
@@ -179,7 +192,7 @@ class Game(metaclass=SingletonMeta):
 
         # Mettre à jour la carte et les animations globales
         self.map.group.update()
-        self.map.update(self.animation_manager)
+        self.map.update(self.animation_manager, self.current_unit)
 
     def run(self,avatars, avatar_names, info_box, info_box_0):
         """
@@ -207,7 +220,6 @@ class Game(metaclass=SingletonMeta):
             # Dessin et rendu de l'écran
             self.draw(avatars, avatar_names, info_box, info_box_0)
 
-        pygame.quit()
 
     def draw(self, avatar_rects, avatar_names, info_box, info_box_0):
         """
@@ -242,10 +254,10 @@ class Game(metaclass=SingletonMeta):
             effect.draw(self.screen.display)
 
         for i, rect in enumerate(avatar_rects):
-            self.screen.display.blit(pygame.image.load(f"../media/UI/{avatar_names[i]}_hud.png"), rect)
+            self.screen.display.blit(pygame.image.load(f"{Settings().path}media/UI/{avatar_names[i]}_hud.png"), rect)
             if selected_avatar == avatar_names[i]:
                 self.current_unit.is_selected = True
-                self.screen.display.blit(pygame.image.load(f"../media/UI/selected_hud.png"),
+                self.screen.display.blit(pygame.image.load(f"{Settings().path}media/UI/selected_hud.png"),
                             avatar_rects[i])  # Highlight selected avatar
 
         # Draw Info Section
@@ -263,12 +275,12 @@ class Game(metaclass=SingletonMeta):
             f"Actions: Move - {self.current_unit.actions['move']}, "
             f"Attack - {self.current_unit.actions['attack']}, Defend - {self.current_unit.actions['defend']}"
         )
-        turn_text = pygame.font.Font('../media/EagleLake-Regular.ttf', 20).render(turn_info, True, (255, 255, 255))
+        turn_text = pygame.font.Font(f'{Settings().path}media/EagleLake-Regular.ttf', 20).render(turn_info, True, (255, 255, 255))
         self.screen.display.blit(turn_text, (10, 10))
 
         # turn_text = pygame.font.Font(None, 36).render(self.text_info, True, (255, 255, 255))
-        self.draw_multiline_text(info_box, pygame.font.Font('../media/EagleLake-Regular.ttf', 20), (255, 255, 255))
-        self.draw_multiline_text(info_box_0, pygame.font.Font('../media/EagleLake-Regular.ttf', 20), (255, 255, 255), f"{self.current_unit.team} \n {self.current_unit.name} \n {self.current_unit.health}")
+        self.draw_multiline_text(info_box, pygame.font.Font(f'{Settings().path}media/EagleLake-Regular.ttf', 20), (255, 255, 255))
+        self.draw_multiline_text(info_box_0, pygame.font.Font(f'{Settings().path}media/EagleLake-Regular.ttf', 20), (255, 255, 255), f"{self.current_unit.team} \n {self.current_unit.name} \n {self.current_unit.health}")
 
         pygame.display.flip()
 
@@ -278,8 +290,8 @@ class Game(metaclass=SingletonMeta):
         Initialise et démarre le jeu.
         """
         pygame.init()
-        icon = pygame.image.load("../media/UI/icon.png")
-        banner = pygame.image.load("../media/UI/banner.png")
+        icon = pygame.image.load(f"{Settings().path}media/UI/icon.png")
+        banner = pygame.image.load(f"{Settings().path}media/UI/banner.png")
         pygame.display.set_icon(icon)
         pygame.display.set_caption("Strategy Game")
         screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -311,7 +323,6 @@ class Game(metaclass=SingletonMeta):
 
         self.run(avatars, avatar_names, info_box, info_box_0)
 
-
         # Mise à jour des éléments du jeu
         self.update()
 
@@ -319,6 +330,8 @@ class Game(metaclass=SingletonMeta):
         self.draw(avatars, avatar_names, info_box, info_box_0)
 
         pygame.display.flip()
+        pygame.quit()
+
 
     def draw_multiline_text(self, info_box, font, color, text=None):
         max_lines = 4

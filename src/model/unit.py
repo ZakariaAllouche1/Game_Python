@@ -237,6 +237,7 @@ class Unit(pygame.sprite.Sprite):
             if (state == 'attacks' or state == 'defenses') and effect is not None:
                 effect.update(self.__x, self.__y, state, action_type, target_pos)
 
+
     def reset_movement_range(self):
         """Réinitialise la portée de mouvement de l'unité."""
         self.old_position = [self.__x, self.__y].copy()
