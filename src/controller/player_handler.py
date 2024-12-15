@@ -92,6 +92,7 @@ class PlayerHandler:
         if self.player.state == 'dead':
             print(f"{self.player.name} est mort et ne peut pas agir.")
             self.animation_manager.update_animation(self.player, 'dead', 'dead')
+            self.game.check_end_of_turn()
             return
 
         # Activation de la défense : Toujours afficher l'animation
