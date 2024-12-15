@@ -82,15 +82,60 @@ class AnimationManager:
         #if apply_effect and effect is not None:
         
 
+
+
+    #def update(self, hero, state, type, dt, screen):
+     #   self.update_animation(hero, state, type)
+      #  effect = self.get_effect(hero.name)
+
+       # apply_effect = self.get_animation(hero.name).update(dt, self.orientation[hero.name])
+        #if apply_effect and effect is not None:
+         #   if effect.current_effect is None:
+          #      effect.start_effect(type)  # Démarrage immédiat de l'effet
+           # effect.apply_effect(dt, self.orientation[hero.name])
+            #effect.draw(screen)  # S'assurer que l'effet est dessiné
+       #     print(f"Effet appliqué pour {hero.name}.")
+
+
     def update(self, hero, state, type, dt, screen):
+        """
+        Met à jour l'animation et l'effet pour un héros donné.
+        :param hero: L'unité dont l'animation est mise à jour.
+        :param state: L'état actuel du héros (e.g., "dead", "movement").
+        :param type: Le type d'action (e.g., "idle", "attack").
+        :param dt: Temps écoulé depuis la dernière mise à jour.
+        :param screen: Surface d'affichage où dessiner les animations.
+        """
+        # Mettre à jour l'animation du héros
         self.update_animation(hero, state, type)
+
+        # Récupérer les composants associés au héros
+        animation = self.get_animation(hero.name)
         effect = self.get_effect(hero.name)
 
-        apply_effect = self.get_animation(hero.name).update(dt, self.orientation[hero.name])
-        if apply_effect and effect is not None:
-            if effect.current_effect is None:
-                effect.start_effect(type)  # Démarrage immédiat de l'effet
-            effect.apply_effect(dt, self.orientation[hero.name])
-            effect.draw(screen)  # S'assurer que l'effet est dessiné
-            print(f"Effet appliqué pour {hero.name}.")
+        if not animation:
+            print(f"[DEBUG] Aucun composant d'animation trouvé pour {hero.name}.")
+            return
 
+        # Mettre à jour l'animation
+        animation_updated = animation.update(dt, self.orientation.get(hero.name, 'right'))
+
+        # Gérer les effets pour les états spécifiques
+        if state == 'dead' and effect:
+            # Démarrage ou continuation de l'effet "dead"
+            if effect.current_effect is None:
+                effect.start_effect(type)
+            effect.apply_effect(dt, self.orientation.get(hero.name, 'right'))
+            effect.draw(screen)
+            print(f"[DEBUG] Effet 'dead' appliqué pour {hero.name}.")
+            return
+
+        # Pour d'autres états, appliquer les effets si nécessaire
+        if animation_updated and effect:
+            if effect.current_effect is None:
+                effect.start_effect(type)
+            effect.apply_effect(dt, self.orientation.get(hero.name, 'right'))
+            effect.draw(screen)
+            print(f"[DEBUG] Effet '{type}' appliqué pour {hero.name}.")
+
+    
