@@ -20,7 +20,7 @@ class Effect:
 
     def set_effects(self):
         for effect_name in self.sprite_conf.effects.keys():
-            self.effects[effect_name] = pygame.image.load(f'../media/spritesheets/{effect_name}.png') # Loading effects sheets
+            self.effects[effect_name] = pygame.image.load(f'media/spritesheets/{effect_name}.png') # Loading effects sheets
 
     # TODO exec mais animation frozen on 0
     def apply_effect(self, dt, orientation='right'):

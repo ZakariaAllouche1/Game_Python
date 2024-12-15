@@ -5,7 +5,7 @@ from src.settings import Settings
 
 class Animation:
     def __init__(self, name, x, y, frame_width, frame_height, animation_speed, sprite_conf):
-        self.sprite_sheet = pygame.image.load(f'../media/spritesheets/{name}.png')
+        self.sprite_sheet = pygame.image.load(f'media/spritesheets/{name}.png')
         self.x = x
         self.y = y
         self.frames = []
