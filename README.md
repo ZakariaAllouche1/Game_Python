@@ -86,8 +86,8 @@ Maintenant que les dépendances sont satisfaites, positionnez-vous dans le fichi
 :warning: Si vous êtes sur VScode, il est très probable que vous ayez un problème lié aux chemis d'accès aux ressources, dans ce cas, pensez à modifier le champ `path` de la classe `Settings` situöe dans le dossier `src`, à substituer par l'une de ces valeurs `self.path = ''` ou `self.path = '../'`.
 
 Si jamais le problème persiste ou que vous n'arrivez pas à lancer le jeu pour x raison, n'hésitez pas à nous contacter via :
-:e-mail: alicia.berrouane@etu.sorbonne-universite.fr
-:e-mail: zakaria.allouche@etu.sorbonne-universite.fr
-:e-mail: amine.nait_si_ahmed@etu.sorbonne-universite.fr
+- :e-mail: alicia.berrouane@etu.sorbonne-universite.fr
+- :e-mail: zakaria.allouche@etu.sorbonne-universite.fr
+- :e-mail: amine.nait_si_ahmed@etu.sorbonne-universite.fr
 
 ---
