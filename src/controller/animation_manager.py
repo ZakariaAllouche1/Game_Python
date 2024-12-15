@@ -72,10 +72,25 @@ class AnimationManager:
     #             effect.draw(screen)
     #             print(effect.effect_index, effect.effect_frames, self.orientation)
 
+    #def update(self, hero, state, type, dt, screen):
+        #self.update_animation(hero, state, type)
+        # Supprimer la gestion directe de `apply_effect` ici
+        #effect = self.get_effect(hero.name)
+        #apply_effect = self.get_animation(hero.name).update(dt, self.orientation[hero.name])
+        #if apply_effect and effect is not None and effect.current_effect is not None:
+         #   print(f"Effect ready to be applied for hero: {hero.name}")
+        #if apply_effect and effect is not None:
+        
+
     def update(self, hero, state, type, dt, screen):
         self.update_animation(hero, state, type)
-        # Supprimer la gestion directe de `apply_effect` ici
         effect = self.get_effect(hero.name)
+
         apply_effect = self.get_animation(hero.name).update(dt, self.orientation[hero.name])
-        if apply_effect and effect is not None and effect.current_effect is not None:
-            print(f"Effect ready to be applied for hero: {hero.name}")
+        if apply_effect and effect is not None:
+            if effect.current_effect is None:
+                effect.start_effect(type)  # Démarrage immédiat de l'effet
+            effect.apply_effect(dt, self.orientation[hero.name])
+            effect.draw(screen)  # S'assurer que l'effet est dessiné
+            print(f"Effet appliqué pour {hero.name}.")
+
