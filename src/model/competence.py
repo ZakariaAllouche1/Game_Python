@@ -12,6 +12,9 @@ class Competence(ABC):
         :param speed: Vitesse d'activation.
         :param range: Portée de la compétence (portée en nombre de cases).
         """
+        if power < 0 or any(dim < 0 for dim in effect_zone + range) or speed <= 0:
+            raise ValueError("Les valeurs de puissance, de zone d'effet, de portée, et de vitesse doivent être positives.")
+
         self.__name = name
         self.__power = power
         self.__effect_zone = effect_zone
@@ -40,25 +43,30 @@ class Competence(ABC):
 
     def is_within_range(self, user_position: Tuple[int, int], target_position: Tuple[int, int]) -> bool:
         """
-        Verifie si la cible est a portee de la competence en considerant des portees distinctes pour les axes x et y.
+        Vérifie si la cible est à portée de la compétence en incluant les diagonales.
         :param user_position: Position de l'utilisateur (x, y).
         :param target_position: Position de la cible (x, y).
-        :return: True si la cible est a portee, False sinon.
+        :return: True si la cible est à portée, False sinon.
         """
         distance_x = abs(target_position[0] - user_position[0])
         distance_y = abs(target_position[1] - user_position[1])
-        
-        
-        return distance_x <= self.range[0] and distance_y <= self.range[1]
+        diagonal_distance = max(distance_x, distance_y)
+
+        in_range = (
+            distance_x <= self.range[0] and
+            distance_y <= self.range[1] and
+            diagonal_distance <= self.range[2]
+        )
+        print(f"[LOG] Vérification de portée: X={distance_x}, Y={distance_y}, Diagonale={diagonal_distance}, Résultat={in_range}")
+        return in_range
 
     @abstractmethod
     def activate(self, user, target):
         """
-        Méthode à implémenter dans les sous-classes.
+        Méthode abstraite à implémenter dans les sous-classes.
         Définit comment activer la compétence.
         """
         pass
-
 
     def __str__(self):
         return f"Competence -- [Nom: {self.name} | Puissance: {self.power} | Zone: {self.effect_zone} | Vitesse: {self.speed} | Portée: {self.range}]"
