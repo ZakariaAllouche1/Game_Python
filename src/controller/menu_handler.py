@@ -169,7 +169,7 @@ class MenuHandler:
         text = ""
 
         try:
-            input_button = pygame.image.load('../media/UI/input.png')
+            input_button = pygame.image.load('media/UI/input.png')
             input_button = pygame.transform.scale(input_button, (400, 150))
             input_rect = input_button.get_rect(center=(screen.get_width() // 2, screen.get_height() // 4))
 
@@ -187,7 +187,7 @@ class MenuHandler:
 
             kansuke_avatar, kansuke_rect = self.settings.create_ui_element('kansuke_avatar', (200, 300), 1280, input_rect.y + input_rect.height + 10)
 
-            ok_button = pygame.image.load('../media/UI/ok_button.png')
+            ok_button = pygame.image.load('media/UI/ok_button.png')
             ok_button = pygame.transform.scale(ok_button, (200, 75))
             ok_rect = ok_button.get_rect(center=(screen.get_width() / 2, 3 * screen.get_height() / 4))
 
@@ -229,7 +229,7 @@ class MenuHandler:
             screen.blit(text_surface, (overlay_x, overlay_y))
 
             for x, y in zip(self.x, self.y):
-                screen.blit(pygame.image.load("../media/UI/selected.png"), (x, y))
+                screen.blit(pygame.image.load("media/UI/selected.png"), (x, y))
 
             for event in pygame.event.get():
                 if event.type == pygame.KEYDOWN:

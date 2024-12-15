@@ -106,6 +106,7 @@ class PlayerHandler:
                                                               self.animation_manager.get_effect(
                                                                   self.animation_manager.heros[self.name].name), None)
             self.animation_manager.update_animation(self.player, 'dead', 'dead')
+            self.game.check_end_of_turn()
             return
 
         # Activation de la défense : Toujours afficher l'animation

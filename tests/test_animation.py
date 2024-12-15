@@ -18,6 +18,9 @@ from src.view.screen import Screen
 
 class Game(metaclass=SingletonMeta):
     def __init__(self):
+        """
+        Initialise le jeu avec ses composants nécessaires.
+        """
         self.is_running = False
         self.players = {}
         self.screen = Screen()
@@ -25,7 +28,6 @@ class Game(metaclass=SingletonMeta):
         self.clock = pygame.time.Clock()
         self.animation_manager = AnimationManager()
         self.animation_factory = AnimationFactory()
-        self.selected_player = None
         self.settings = Settings()
         self.current_player_index = 0
         self.current_unit_index = 0
@@ -35,6 +37,10 @@ class Game(metaclass=SingletonMeta):
         self.text_info = None
 
     def initialize_entities(self, selected_units):
+        """
+        Crée les entités (joueurs et unités) pour le jeu.
+        :param selected_units: Dictionnaire des unités sélectionnées par les joueurs.
+        """
         if selected_units:
             for i, (name, unit_names) in enumerate(selected_units.items()):
                 player = Player(name)
@@ -61,8 +67,12 @@ class Game(metaclass=SingletonMeta):
             self.reset_unit_actions()
 
     def reset_unit_actions(self):
+        """
+        Réinitialise les actions de l'unité courante.
+        """
         if self.current_unit:
             self.current_unit.actions = {"move": True, "attack": True, "defend": True}
+            print(f"Actions réinitialisées pour {self.current_unit.name}.")
             self.text_info = (f"C: '{self.current_unit.competences['attacks'][0]}' \n"
                               f"V: '{self.current_unit.competences['attacks'][1]}' \n")
 
@@ -76,16 +86,20 @@ class Game(metaclass=SingletonMeta):
             if self.current_unit_index >= len(self.current_player.units):
                 self.current_unit_index = 0
                 self.next_player()
-                return  # Sortir de la méthode après changement de joueur
+                return
 
             # Obtenir l'unité suivante
             self.current_unit = list(self.current_player.units.values())[self.current_unit_index]
 
-            # Ignorer les unités mortes
             if self.current_unit.state != 'dead':
                 print(f"Passage à l'unité suivante : {self.current_unit.name}.")
                 self.reset_unit_actions()
-                break  # Unité valide trouvée, sortir de la boucle
+                break
+
+
+
+
+
 
     def next_player(self):
         """
@@ -101,13 +115,16 @@ class Game(metaclass=SingletonMeta):
                 self.current_unit = list(self.current_player.units.values())[self.current_unit_index]
                 print(f"Passage au joueur suivant : {self.current_player.name}.")
                 self.reset_unit_actions()
-                break  # Joueur valide trouvé, sortir de la boucle
+                break
 
             # Vérifier si la partie est terminée (tous les joueurs sauf un sont éliminés)
             if self.check_game_over():
                 return
 
     def check_game_over(self):
+        """
+        Vérifie si la partie est terminée. Si un seul joueur reste, il est déclaré gagnant.
+        """
         for player_name, player in self.players.items():
             if all(unit.state == 'dead' for unit in player.units.values()):
                 print(f"Le joueur {player_name} a perdu toutes ses unités.")
@@ -115,29 +132,59 @@ class Game(metaclass=SingletonMeta):
                 if len(self.players_list) == 1:
                     print(f"Le joueur {self.players_list[0]} a gagné la partie!")
                     self.is_running = False
-                    return
+                    return True
+        return False
 
     def check_end_of_turn(self):
+        """
+        Vérifie si l'unité a terminé son tour.
+        """
+        if self.current_unit.state == 'dead':
+            print(f"{self.current_unit.name} est morte. Son tour est sauté.")
+            self.next_unit()
+            return
+
         if not self.current_unit.actions["attack"] and not self.current_unit.actions["defend"]:
             print(f"{self.current_unit.name} a terminé son tour.")
             self.next_unit()
 
     def update(self):
-        unit = self.current_unit
-        self.map.group.update()
-        if unit:
-            anim = self.animation_manager.get_animation(unit.name)
-            if anim and anim.feet.collidelist(self.map.collisions) > -1:
-                unit.move_back(anim.rect, anim.feet)
-            if anim.feet.collidelist(self.map.lava_tiles) > -1:
-                if unit.name != 'Natsu':
-                    unit.health = 0
-                    unit.set_state('dead', None, None)
-            if unit.name != 'Gray' and anim.feet.collidelist(self.map.ice_tiles) > -1:
-                unit.move_back(anim.rect, anim.feet)
-        self.map.update(self.animation_manager, self.current_unit)
+        """
+        Met à jour les animations et l'état du jeu.
+        """
+        # Mettre à jour toutes les unités (vivantes ou mortes)
+        for player in self.players.values():
+            for unit in player.units.values():
+                # Récupérer l'animation de l'unité
+                anim = self.animation_manager.get_animation(unit.name)
+                if anim:
+                    if anim.feet.collidelist(self.map.collisions) > -1:
+                        unit.move_back(anim.rect, anim.feet)
+                    if anim.feet.collidelist(self.map.lava_tiles) > -1:
+                        if unit.name != 'Natsu':
+                            unit.health = 0
+                            unit.set_state('dead', None, None)
+                    if unit.name != 'Gray' and anim.feet.collidelist(self.map.ice_tiles) > -1:
+                        unit.move_back(anim.rect, anim.feet)
 
-    def run(self, avatars, avatar_names, info_box, info_box_0):
+                    if unit.state == 'dead':  # Si l'unité est morte
+                        anim.state = 'dead'
+                        anim.type = 'dead'  # Forcer l'état "dead"
+                    anim.update(self.clock.get_time(), self.animation_manager.orientation[unit.name])
+
+                # Gestion des collisions uniquement pour les unités vivantes
+                if unit.state != 'dead':
+                    if anim.feet.collidelist(self.map.collisions) > -1:
+                        unit.move_back(anim.rect, anim.feet)
+
+        # Mettre à jour la carte et les animations globales
+        self.map.group.update()
+        self.map.update(self.animation_manager)
+
+    def run(self,avatars, avatar_names, info_box, info_box_0):
+        """
+        Boucle principale du jeu.
+        """
         self.is_running = True
 
         while self.is_running:
@@ -154,7 +201,6 @@ class Game(metaclass=SingletonMeta):
                         self.is_running = False
                     handler.key_down_event(event, self.screen.display, dt)
 
-            # Gestion continue des touches pressées
             handler.key_pressed_event()
             self.update()
             avatar_names = list(self.current_player.units.keys())
@@ -164,15 +210,29 @@ class Game(metaclass=SingletonMeta):
         pygame.quit()
 
     def draw(self, avatar_rects, avatar_names, info_box, info_box_0):
+        """
+        Dessine les informations de tour et les animations.
+        """
         selected_avatar = self.current_unit.name
         animation = self.animation_manager.get_animation(self.current_unit.name)
         effect = self.animation_manager.get_effect(self.current_unit.name)
+        # Mettre à jour et dessiner les animations de toutes les unités
+        for player in self.players.values():
+            for unit in player.units.values():
+                animation = self.animation_manager.get_animation(unit.name)
+                effect = self.animation_manager.get_effect(unit.name)
 
-        if animation and animation.update(self.clock.get_time(), self.animation_manager.orientation[self.current_unit.name]):
-            if effect and effect.current_effect is not None:
-                if not effect.apply_effect(self.clock.get_time(), self.animation_manager.orientation[self.current_unit.name]):
-                    print("Effect animation completed.")
-                    effect.current_effect = None
+                if animation:
+                    # Mise à jour de l'animation de l'unité
+                    animation.update(self.clock.get_time(), self.animation_manager.orientation[unit.name])
+                    #animation.draw(self.screen.display)  # Dessiner l'animation sur l'écran
+
+                if effect and effect.current_effect is not None:
+                    # Appliquer les effets liés à l'unité
+                    if not effect.apply_effect(self.clock.get_time(), self.animation_manager.orientation[unit.name]):
+                        print(f"Effect completed for {unit.name}.")
+                        effect.current_effect = None
+                    effect.draw(self.screen.display)  # Dessiner les effets sur l'écran
 
         self.map.update(self.animation_manager, self.current_unit)
 
@@ -197,6 +257,7 @@ class Game(metaclass=SingletonMeta):
 
         # self.draw_walkable_overlay(self.animation_manager.get_animation(self.selected_player.selected_unit.name).get_walkable_tiles(self.selected_player.selected_unit.movement_range))
 
+        # Informations de tour
         turn_info = (
             f"Player: {self.current_player.name} | Unit: {self.current_unit.name} | "
             f"Actions: Move - {self.current_unit.actions['move']}, "
@@ -211,7 +272,11 @@ class Game(metaclass=SingletonMeta):
 
         pygame.display.flip()
 
+
     def start(self):
+        """
+        Initialise et démarre le jeu.
+        """
         pygame.init()
         icon = pygame.image.load("../media/UI/icon.png")
         banner = pygame.image.load("../media/UI/banner.png")
@@ -282,6 +347,7 @@ class Game(metaclass=SingletonMeta):
             y += line_spacing  # Décalage vertical pour la prochaine ligne
 
 
+# Démarrer le jeu
 if __name__ == "__main__":
     game = Game()
     game.start()
