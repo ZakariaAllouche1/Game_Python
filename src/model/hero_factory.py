@@ -58,86 +58,85 @@ class HeroFactory:
     def erza(x, y, team):
         erza = Unit("Erza", x, y, 100, team, 10)
 
-        erza.add_competence(Attack("Sword of destiny", 30, (2, 2, 0), 10, (4, 3, 0), None), "attack")
-        erza.add_competence(Attack("Titania attack", 45, (3, 2, 0), 10, (5, 4, 0), None), "attack")
+        # Augmenter la portée des attaques
+        erza.add_competence(Attack("Sword of destiny", 80, (15, 12, 0), 10, (70, 50, 45), None), "attack")
+        erza.add_competence(Attack("Titania attack", 75, (10, 15, 0), 10, (60, 40, 30), None), "attack")
 
         erza.add_competence(Defense("Fairy aura", 20, (1, 1, 0), 10, (0, 0, 0)), "defense")
         erza.add_competence(Defense("Diamond shield", 35, (2, 1, 0), 10, (0, 0, 0)), "defense")
 
         sprite_conf = HeroFactory.sprite_config(erza.name)
-
         return erza, sprite_conf
 
     @staticmethod
     def gray(x, y, team):
         gray = Unit("Gray", x, y, 100, team, 10)
 
-        gray.add_competence(Attack("Frozen swords", 20, (2, 2, 0), 10, (4, 3, 0), None), "attack")
-        gray.add_competence(Attack("Icy destruction", 40, (3, 2, 0), 10, (5, 4, 0), None), "attack")
+        # Augmenter la portée des attaques
+        gray.add_competence(Attack("Frozen swords", 80, (12, 22, 0), 10, (85, 45, 35), None), "attack")
+        gray.add_competence(Attack("Icy destruction", 70, (13, 12, 0), 10, (50, 80, 40), None), "attack")
 
         gray.add_competence(Defense("Ice shield", 15, (1, 1, 0), 10, (0, 0, 0)), "defense")
         gray.add_competence(Defense("Absolute ice", 30, (2, 2, 0), 10, (0, 0, 0)), "defense")
 
         sprite_conf = HeroFactory.sprite_config(gray.name)
-
         return gray, sprite_conf
 
     @staticmethod
     def natsu(x, y, team):
         natsu = Unit("Natsu", x, y, 130, team, 10)
 
-        natsu.add_competence(Attack("Fire dragon's iron fist", 35, (3, 3, 0), 10, (4, 4, 0), None), "attack")
-        natsu.add_competence(Attack("Fire dragon's roar", 50, (5, 3, 0), 10, (5, 4, 0), None), "attack")
+        # Augmenter la portée des attaques
+        natsu.add_competence(Attack("Fire dragon's iron fist", 85, (33, 23, 0), 10, (60, 60, 70), None), "attack")
+        natsu.add_competence(Attack("Fire dragon's roar", 70, (25, 13, 0), 10, (70, 50, 45), None), "attack")
 
         natsu.add_competence(Defense("Protective flame", 30, (1, 1, 0), 10, (0, 0, 0)), "defense")
         natsu.add_competence(Defense("Flame envelope", 20, (2, 1, 0), 10, (0, 0, 0)), "defense")
 
         sprite_conf = HeroFactory.sprite_config(natsu.name)
-
         return natsu, sprite_conf
 
     @staticmethod
     def kansuke(x, y, team):
-        kansuke = Unit("Kansuke", x, y, 110, team, 10)
+        kansuke = Unit("Kansuke", x, y, 100, team, 10)
 
-        kansuke.add_competence(Attack("Infinite ligh", 25, (4, 4, 0), 10, (4, 4, 0), None), "attack")
-        kansuke.add_competence(Attack("Holy light", 55, (3, 3, 0), 10, (3, 4, 0), None), "attack")
+        # Augmenter la portée des attaques
+        kansuke.add_competence(Attack("Infinite light", 85, (14, 24, 0), 10, (55, 55, 45), None), "attack")
+        kansuke.add_competence(Attack("Holy light", 75, (3, 3, 0), 10, (60, 60, 50), None), "attack")
 
         kansuke.add_competence(Defense("Dissipative clarity", 20, (1, 1, 0), 10, (0, 0, 0)), "defense")
         kansuke.add_competence(Defense("Protective ray", 35, (2, 2, 0), 10, (0, 0, 0)), "defense")
 
         sprite_conf = HeroFactory.sprite_config(kansuke.name)
-
         return kansuke, sprite_conf
 
     @staticmethod
     def gowther(x, y, team):
         gowther = Unit("Gowther", x, y, 120, team, 10)
 
-        gowther.add_competence(Attack("Darkness flare bomb", 40, (3, 3, 0), 10, (5, 5, 0), None), "attack")
-        gowther.add_competence(Attack("Obscurity tentacles", 60, (2, 2, 0), 10, (2, 2, 0), None), "attack")
+        # Augmenter la portée des attaques
+        gowther.add_competence(Attack("Darkness flare bomb", 80, (13, 30, 0), 10, (40, 50, 80), None), "attack")
+        gowther.add_competence(Attack("Obscurity tentacles", 60, (22, 20, 0), 10, (65, 60, 50), None), "attack")
 
         gowther.add_competence(Defense("Shadow rune shield", 35, (1, 1, 0), 10, (0, 0, 0)), "defense")
         gowther.add_competence(Defense("Demon aura", 20, (2, 2, 0), 10, (0, 0, 0)), "defense")
 
         sprite_conf = HeroFactory.sprite_config(gowther.name)
-
         return gowther, sprite_conf
 
     @staticmethod
     def heisuke(x, y, team):
         heisuke = Unit("Heisuke", x, y, 140, team, 10)
 
-        heisuke.add_competence(Attack("Thunderball", 45, (4, 4, 0), 10, (5, 5, 0), None), "attack")
-        heisuke.add_competence(Attack("Lightning sabe", 50, (3, 3, 0), 10, (4, 4, 0), None), "attack")
+        # Augmenter la portée des attaques
+        heisuke.add_competence(Attack("Thunderball", 75, (24, 14, 0), 10, (65, 55, 45), None), "attack")
+        heisuke.add_competence(Attack("Lightning saber", 60, (3, 3, 0), 10, (70, 60, 50), None), "attack")
 
         heisuke.add_competence(Defense("Regenerative lightning", 15, (1, 1, 0), 10, (0, 0, 0)), "defense")
         heisuke.add_competence(Defense("Lightning strike", 10, (2, 2, 0), 10, (0, 0, 0)), "defense")
 
         sprite_conf = HeroFactory.sprite_config(heisuke.name)
-
         return heisuke, sprite_conf
-
 
     @staticmethod
     def create_hero(name, x, y, team):
