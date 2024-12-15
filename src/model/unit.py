@@ -1,35 +1,29 @@
 from typing import Tuple
-
 import pygame
 from pygame import Rect
-
 from src.model.attack import Attack
 from src.settings import Settings
 from src.view.map import Map
+
 
 # Constantes
 GRID_SIZE = 8
 CELL_SIZE = 60
 SCREEN_WIDTH = GRID_SIZE * CELL_SIZE
 SCREEN_HEIGHT = GRID_SIZE * CELL_SIZE
-FPS = 30
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-BLUE = (0, 0, 255)
-GREEN = (0, 255, 0)
 
 
 class Unit(pygame.sprite.Sprite):
     def __init__(self, name: str, x: int, y: int, health: int, team: str, speed: int, range: Tuple[int, int, int] = (2, 3, 1)):
         """
-        Instamciates the Units representing the characters/Heros of the game.
-        :param name: the name of the Hero
-        :param x: position of the Hero on x-axis
-        :param y: position of the Hero on y-axis
-        :param health: points of health of the Hero
-        :param team: the team of the Hero ['Player 1', 'Player 2']
-        :param speed: speed of the Hero
+        Instancie une unité représentant un héros du jeu.
+        :param name: Nom de l'unité.
+        :param x: Position initiale sur l'axe X.
+        :param y: Position initiale sur l'axe Y.
+        :param health: Points de vie initiaux.
+        :param team: Équipe de l'unité.
+        :param speed: Vitesse de déplacement.
+        :param range: Portée de déplacement (vertical, horizontal, diagonal).
         """
         super().__init__()
         self.__name = name
@@ -38,26 +32,29 @@ class Unit(pygame.sprite.Sprite):
         self.__health = float(health)
         self.__team = team
         self.__speed = speed
-        self.start_x = x
-        self.start_y = y
-        self.__movement_range = range  # v, h, d
+        self.__movement_range = range  # (vertical, horizontal, diagonal)
         self.__is_selected = False
         self.__competences = {"attacks": [], "defenses": []}
+        self.__image = None
         self.state = 'idle'
-        # self.animation = Animation(name, x, y, 120, 120, 24, 0.1)
-        self.old_position = [self.__x, self.__y].copy()
+        self.old_position = [self.__x, self.__y].copy()  # Sauvegarde de la dernière position
+        self.actions = {"move": True, "attack": True, "defend": True}  # Actions disponibles dans un tour
+
+    # === PROPRIÉTÉS ===
 
     @property
     def name(self):
+        """Retourne le nom de l'unité."""
         return self.__name
 
     @property
     def x(self):
+        """Retourne la position X de l'unité."""
         return self.__x
 
     @x.setter
     def x(self, value):
-        """Maj de pos en x (verification des limites)"""
+        """Met à jour la position X (vérification des limites)."""
         if 0 <= value < SCREEN_WIDTH:
             self.__x = value
         else:
@@ -65,18 +62,16 @@ class Unit(pygame.sprite.Sprite):
 
     @property
     def y(self):
+        """Retourne la position Y de l'unité."""
         return self.__y
 
     @y.setter
     def y(self, value):
-        """Maj de position en y (vrification des limites)"""
+        """Met à jour la position Y (vérification des limites)."""
         if 0 <= value < SCREEN_HEIGHT:
             self.__y = value
         else:
             print(f"Position Y invalide : {value}")
-    @property
-    def movement_range(self):
-        return self.__movement_range
 
     @property
     def health(self):
@@ -84,63 +79,117 @@ class Unit(pygame.sprite.Sprite):
 
     @health.setter
     def health(self, damage):
-        """Setter pour health - calcul de santé"""
-        if damage >= 0:
+        """Met à jour les points de vie en réduisant les dégâts."""
+        if damage > 0:
             old_health = self.__health
             self.__health = max(0, self.__health - damage)
-
-    @property
-    def image(self):
-        return self.__image
-
-    @image.setter
-    def image(self, image):
-        self.__image = image
-
-    @property
-    def competences(self):
-        return self.__competences
-
+            print(f"[LOG] {self.name}: Santé mise à jour de {old_health:.2f} à {self.__health:.2f}")
+            if self.__health <= 0:
+                self.state = 'dead'
+                print(f"[LOG] {self.name} est maintenant mort.")
+                
     @property
     def team(self):
+        """Retourne l'équipe de l'unité."""
         return self.__team
 
     @property
     def speed(self):
+        """Retourne la vitesse de déplacement de l'unité."""
         return self.__speed
 
     @property
+    def movement_range(self):
+        """Retourne la portée de mouvement de l'unité."""
+        return self.__movement_range
+
+    @property
     def is_selected(self):
+        """Retourne si l'unité est sélectionnée."""
         return self.__is_selected
 
-    @health.setter
-    def health(self, damage):
-        """Setter pour health - calcul de santé"""
-        if damage >= 0:
-            self.__health = max(0, self.health - damage)
-
     @is_selected.setter
-    def is_selected(self, is_selected):
-        self.__is_selected = is_selected
+    def is_selected(self, value):
+        """Définit si l'unité est sélectionnée."""
+        self.__is_selected = value
 
+    @property
+    def competences(self):
+        """Retourne les compétences (attaques et défenses) de l'unité."""
+        return self.__competences
+
+    @property
+    def image(self):
+        """Retourne l'image associée à l'unité."""
+        return self.__image
+
+    @image.setter
+    def image(self, value):
+        """Met à jour l'image associée à l'unité."""
+        self.__image = value
+
+    # === MÉTHODES ===
 
     def add_competence(self, competence, type):
-        """Ajoute une compétence à l'unité."""
+        """
+        Ajoute une compétence à l'unité.
+        :param competence: La compétence à ajouter.
+        :param type: Type de compétence (attaque ou défense).
+        """
         if type == "attack":
             self.__competences["attacks"].append(competence)
         elif type == "defense":
             self.__competences["defenses"].append(competence)
         else:
-            # TODO log
-            print("Cannot add this competence, unknown competence type !")
+            print(f"Type de compétence inconnu : {type}")
+
+    def activate_defense(self, damage: int, animation_manager) -> int:
+        if self.state == 'dead':
+            print(f"{self.name} est déjà mort et ne peut pas se défendre.")
+            return damage
+        for defense in self.__competences["defenses"]:
+            old_damage = damage
+            defense.activate(self, animation_manager)
+            damage = defense.reduce_damage(damage, animation_manager, self)
+            print(f"[LOG] {self.name}: Dégâts réduits de {old_damage} à {damage} par {defense.name}.")
+        return damage
 
 
-    def move(self, dx, dy, rect: Rect, feet: Rect, map: Map):
-        """Déplace l'unité.(pour tester)"""
+    def attack(self, target, attack, animation_manager):
+        """
+        Effectue une attaque sur une cible.
+        :param target: La cible principale.
+        :param attack: Compétence d'attaque à utiliser.
+        """
+        if self.state == 'dead':
+            print(f"{self.name} est mort et ne peut pas attaquer.")
+            return
+        if target is None:
+            print(f"{self.name} n'a pas de cible pour l'attaque.")
+            return
+        if isinstance(attack, Attack):
+            attack.activate(self, target, animation_manager)
+        else:
+            print(f"Compétence invalide utilisée par {self.name}.")
+    def move(self, dx: int, dy: int, rect: Rect, feet: Rect, map_obj: Map):
+        """
+        Déplace l'unité sur le champ de bataille.
+        :param dx: Déplacement sur l'axe X.
+        :param dy: Déplacement sur l'axe Y.
+        :param rect: Rectangle représentant l'unité.
+        :param feet: Rectangle représentant les pieds de l'unité.
+        :param map_obj: Carte actuelle.
+        """
+        if self.state == 'dead':
+            print(f"{self.name} est mort et ne peut pas se déplacer.")
+            return
         setting = Settings()
         new_x = self.__x + dx
         new_y = self.__y + dy
-        if 0 <= new_x + (setting.sprite_width / 2) <= map.width and 0 <= new_y + (setting.sprite_height / 2)<= map.height:
+
+        # Vérifie les limites de la carte
+        if 0 <= new_x + (setting.sprite_width / 2) <= map_obj.width and \
+           0 <= new_y + (setting.sprite_height / 2) <= map_obj.height:
             self.save_location()
             self.__x = new_x
             self.__y = new_y
@@ -149,49 +198,48 @@ class Unit(pygame.sprite.Sprite):
         else:
             print(f"Déplacement impossible pour {self.name} ({new_x}, {new_y} hors limite).")
 
-    def reset_movement_range(self):
-        """Réinitialise la position de départ pour un nouveau mouvement."""
-        self.start_x = self.__x
-        self.start_y = self.__y
-
-    def attack(self, target, attack):
-        """Effectue une attaque."""
-        if isinstance(attack, Attack):
-            attack.activate(self, target)
-
-    def activate_defense(self, damage: int) -> int:
-        """
-        Applique les compétences de défense pour réduire les dégâts.
-        :param damage: Dégâts initiaux.
-        :return: Dégâts après réduction.
-        """
-        for defense in self.__competences["defenses"]:
-            defense.activate(self)
-            damage = defense.reduce_damage(damage)
-        return damage
-
-    def update(self, rect: Rect, feet: Rect):
-        rect.topleft = (self.x, self.y)
-        feet.x = self.x + (rect.width * 0.7) / 4
-        feet.y = self.y + (rect.height * 0.75)
-
+    def save_location(self):
+        """Sauvegarde la position actuelle de l'unité."""
+        self.old_position = [self.__x, self.__y].copy()
 
     def move_back(self, rect: Rect, feet: Rect):
+        """
+        Réinitialise la position de l'unité si le déplacement est invalide.
+        :param rect: Rectangle représentant l'unité.
+        :param feet: Rectangle représentant les pieds de l'unité.
+        """
         self.__x = self.old_position[0]
         self.__y = self.old_position[1]
-        rect.topleft = (self.x, self.y)
+        rect.topleft = (self.__x, self.__y)
         feet.midbottom = rect.midbottom
         self.update(rect, feet)
 
+    def update(self, rect: Rect, feet: Rect):
+        """
+        Met à jour la position graphique de l'unité.
+        :param rect: Rectangle représentant l'unité.
+        :param feet: Rectangle représentant les pieds de l'unité.
+        """
+        rect.topleft = (self.__x, self.__y)
+        feet.x = self.__x + (rect.width * 0.7) / 4
+        feet.y = self.__y + (rect.height * 0.75)
 
-    def save_location(self):
-        self.old_position = [self.x, self.y].copy()
-
-    def set_state(self, state, type, effect, target_pos=None):
+    def set_state(self, state, action_type, effect, target_pos=None):
+        """
+        Définit l'état de l'unité pour synchroniser avec l'animation.
+        :param state: État de l'unité (idle, attacks, defenses).
+        :param action_type: Type d'action (attaque ou défense).
+        :param effect: Effet visuel à appliquer.
+        :param target_pos: Position cible (optionnel).
+        """
         if self.state != 'dead':
             self.state = state
-            if (state == 'attacks' or state == 'defenses') and effect is not None :
-                effect.update(self.x, self.y, state, type, target_pos)
+            if (state == 'attacks' or state == 'defenses') and effect is not None:
+                effect.update(self.__x, self.__y, state, action_type, target_pos)
+
+    def reset_movement_range(self):
+        """Réinitialise la portée de mouvement de l'unité."""
+        self.old_position = [self.__x, self.__y].copy()
 
     def __str__(self):
-        return f"Unit -- [Nom: {self.name}]"
+        return f"Unit -- [Nom: {self.name} | Santé: {self.health} | Position: ({self.__x}, {self.__y}) | Équipe: {self.team}]"
