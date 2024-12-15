@@ -32,6 +32,10 @@ class Game(metaclass=SingletonMeta):
             anim = self.animation_manager.get_animation(unit.name)
             if anim.feet.collidelist(self.map.collisions) > -1:
                 unit.move_back(anim.rect, anim.feet)
+            if unit.name != 'Natsu' and anim.feet.collidelist(self.map.lava_tiles) > -1:
+                unit.move_back(anim.rect, anim.feet)
+            if unit.name != 'Gray' and anim.feet.collidelist(self.map.ice_tiles) > -1:
+                unit.move_back(anim.rect, anim.feet)
         self.map.update(self.animation_manager) # ajouté
 
     def run(self):
@@ -198,7 +202,7 @@ class Game(metaclass=SingletonMeta):
                         if event.type == pygame.KEYDOWN:
                             if event.key == pygame.K_END:  # Fin du jeu
                                 self.is_running = False
-                            elif event.key == pygame.K_1:
+                            elif event.key == pygame.K_KP1:
                                 self.selected_player.selected_unit.attack()
                             handler.name = self.selected_player.selected_unit.name
                             handler.key_down_event(event, self.screen.display, dt)
@@ -222,6 +226,12 @@ class Game(metaclass=SingletonMeta):
             )
             overlay_surface.fill(overlay_color)
             self.screen.display.blit(overlay_surface, (tile_x, tile_y))
+
+    def overlay_tile(self, x, y, color):
+        overlay_surface = pygame.Surface((self.settings.tile_width, self.settings.tile_height), pygame.SRCALPHA)
+        overlay_surface.fill(color)
+
+        self.screen.display.blit(overlay_surface, (x * self.settings.tile_width, y * self.settings.tile_height))
 
 
 game = Game()

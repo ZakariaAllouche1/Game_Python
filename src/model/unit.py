@@ -145,7 +145,7 @@ class Unit(pygame.sprite.Sprite):
             self.__x = new_x
             self.__y = new_y
             self.update(rect, feet)
-            print(f"{self.name} se déplace vers ({self.__x}, {self.__y}).")
+            # print(f"{self.name} se déplace vers ({self.__x}, {self.__y}).")
         else:
             print(f"Déplacement impossible pour {self.name} ({new_x}, {new_y} hors limite).")
 

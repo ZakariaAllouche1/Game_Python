@@ -16,6 +16,9 @@ class Map:
         self.switch_map('map_1')
         self.__collisions = []
         self.get_collisions()
+        self.ice_tiles =  []
+        self.lava_tiles =  []
+        self.get_tiles()
 
     @property
     def screen(self):
@@ -80,3 +83,39 @@ class Map:
         for obj in self.tmx_data.objects:
             if obj.type == 'collision':
                 self.collisions.append(pygame.Rect(obj.x * self.zoom_factor, obj.y * self.zoom_factor, obj.width * self.zoom_factor, obj.height * self.zoom_factor))
+
+    def get_tiles(self):
+        for obj in self.tmx_data.objects:
+            if obj.type == 'Ice':
+                self.ice_tiles.append(pygame.Rect(obj.x * self.zoom_factor, obj.y * self.zoom_factor, obj.width * self.zoom_factor, obj.height * self.zoom_factor))
+            elif obj.type == 'Lava':
+                self.lava_tiles.append(pygame.Rect(obj.x * self.zoom_factor, obj.y * self.zoom_factor, obj.width * self.zoom_factor, obj.height * self.zoom_factor))
+
+
+
+    # def tile_type(self, x, y):
+    #     settings = Settings()
+    #     # Calculate tile indices (column, row)
+    #     tile_x = x // settings.tile_width
+    #     tile_y = y // settings.tile_height
+    #
+    #     # Retrieve the tile from a specific layer
+    #     layers = [self.tmx_data.get_layer_by_name("lava"), self.tmx_data.get_layer_by_name("ice")]
+    #     for layer in layers:
+    #         if layer is not None:
+    #             if 0 <= tile_x < self.tmx_data.width and 0 <= tile_y < self.tmx_data.height:
+    #                 tile_gid = layer.data[tile_y][tile_x]
+    #             else:
+    #                 tile_gid = 0  # No tile
+    #
+    #             # Check if the tile exists
+    #             if tile_gid != 0:  # 0 means no tile at this location
+    #                 # Get the properties of the tile via its GID
+    #                 tile_properties = self.tmx_data.get_tile_properties_by_gid(tile_gid)
+    #
+    #                 if tile_properties is not None:
+    #                     # Access the "class" property (or return "undefined" if not set)
+    #                     return tile_properties.get("class", "undefined")
+    #             else:
+    #                 return "undefined"  # No tile found at the given position
+

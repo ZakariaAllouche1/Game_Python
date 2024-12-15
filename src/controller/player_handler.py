@@ -25,6 +25,7 @@ class PlayerHandler:
         pressed = pygame.key.get_pressed()
         anim = self.animation_manager.get_animation(self.name)
         effect = self.animation_manager.get_effect(self.name)
+        blocked = False
         # print(f"Effect active: {effect.effect_image is not None}")
         if effect is not None and effect.current_effect is None:
             if pressed[pygame.K_LEFT]:
