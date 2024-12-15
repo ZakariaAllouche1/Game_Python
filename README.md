@@ -1,37 +1,78 @@
-# Game_Python
+# Jeu de Stratégie 2D
 
-# Explication du jeu
+## **Description**
+Un jeu de stratégie au tour par tour où deux joueurs s’affrontent en sélectionnant leurs héros et en utilisant leurs compétences stratégiquement pour vaincre l'adversaire. Le jeu propose une carte avec obstacles et des héros aux compétences variées, équilibrant attaque et défense.
 
-Le jeu se joue entre deux joueurs, chacun devant choisir **3 héros** parmi les 6 disponibles : **Erza**, **Gray**, **Natsu**, **Kansuke**, **Gowther**, et **Heisuke**.  
+---
 
-## Compétences des héros :  
-Chaque héros possède **différentes compétences**, qui influencent :  
+## **Comment jouer ?**
+
+### **Début du jeu**
+1. **Choix des noms des joueurs** :  
+   - Chaque joueur commence par **saisir son nom** en appuyant sur **Entrée** après l’avoir écrit.  
+
+2. **Sélection des héros** :  
+   - Chaque joueur sélectionne **3 héros** parmi les 6 disponibles :  
+     - **Erza**
+     - **Gray**
+     - **Natsu**
+     - **Kansuke**
+     - **Gowther**
+     - **Heisuke**
+
+---
+
+### **Compétences des héros**
+Chaque héros dispose de compétences variées pour **équilibrer le gameplay** :
 - **Santé** : Certains héros ont plus de points de vie, les rendant plus résistants.  
-- **Réduction des dégâts** : Chaque héros peut réduire un pourcentage des dégâts reçus lors des attaques ennemies, grâce à leurs capacités défensives.  
-- **Style d’attaque** :  
+- **Réduction des dégâts** : Les héros peuvent réduire un **pourcentage des dégâts** reçus lorsqu’ils sont attaqués.  
+- **Attaque** :  
   - Certains héros possèdent des attaques avec une **grande portée**, leur permettant d'attaquer à distance.  
   - D'autres privilégient des attaques ayant une **grande zone d’effet**, où les dégâts varient selon la position des cibles :  
     - **Cible principale (au centre)** : Subit **100% des dégâts**.  
     - **Cibles secondaires (autour)** : Subissent **50% des dégâts**.  
 
-Les compétences sont réparties de manière à **équilibrer le jeu** entre les héros. Ainsi, aucun héros n’est trop puissant ou trop faible, encourageant une stratégie variée et équilibrée entre les joueurs.  
+Les compétences sont conçues pour maintenir un équilibre entre les héros, évitant qu’un héros soit trop puissant ou trop faible.
 
-## La carte et les obstacles :  
-La carte contient **3 types d’obstacles** qui influencent la stratégie des joueurs :  
-- **Lava** : Seul **Natsu** peut traverser la lave sans danger. Tous les autres héros meurent en tentant de le faire.  
-- **Ice** : Seul **Gray** peut traverser la glace.  
-- **Objets fixes (maisons, arbres)** : Ces obstacles sont infranchissables pour tous les héros.  
+---
 
-## Déroulement du jeu :  
-Une fois les héros choisis, le jeu commence. Les joueurs attaquent à tour de rôle, en sélectionnant une unité et en choisissant une de ses **deux attaques disponibles**.  
+### **Contrôles**
+- **Attaques** :  
+  - **C** : Effectuer la **première attaque** de l’unité.  
+  - **V** : Effectuer la **deuxième attaque** de l’unité.  
 
-### Mécanique des attaques :  
-- Lorsqu’un joueur attaque un adversaire, une **zone d’effet** est générée autour de la cible.  
-  - **La cible principale**, située au centre, subit **100% des dégâts**.  
-  - **Les autres adversaires** présents dans la zone d’effet reçoivent **50% des dégâts**.  
-- Chaque attaque déclenche automatiquement la **défense** des cibles affectées, réduisant les dégâts reçus selon leur pourcentage de réduction.  
+- **Défense** :  
+  - **A** : Activer la compétence de **défense**.  
 
-Après chaque attaque, le tour passe à l’unité suivante, permettant aux joueurs d'alterner leurs actions.  
+---
 
-## Conditions de victoire :  
-Le jeu continue jusqu'à ce qu’un des deux joueurs perde **tous ses héros**. Le joueur ayant encore au moins un héros en vie remporte la partie.  
+### **Carte et Obstacles**
+La carte contient **3 types d’obstacles** qui influencent les déplacements et la stratégie :  
+1. **Lava** :  
+   - Seul **Natsu** peut traverser la lave. Les autres héros meurent instantanément en essayant.  
+2. **Ice** :  
+   - Seul **Gray** peut traverser la glace.  
+3. **Objets fixes** (maisons, arbres) :  
+   - Ces obstacles sont infranchissables pour tous les héros.  
+
+---
+
+### **Déroulement du jeu**
+1. Les joueurs attaquent à tour de rôle.  
+2. Chaque joueur sélectionne une unité parmi les 3 héros choisis, puis choisit l’une des **deux attaques disponibles** :  
+   - Une **zone d’effet** est générée autour de la cible.  
+     - La **cible principale** subit **100% des dégâts**.  
+     - Les **autres cibles** dans la zone d’effet subissent **50% des dégâts**.  
+
+3. **Défense automatique** : Lorsqu’une unité est attaquée, sa compétence de défense s’active automatiquement, réduisant les dégâts subis.  
+
+4. Après chaque action, le **tour passe à l’unité suivante**, alternant les joueurs.
+
+---
+
+### **Conditions de victoire**
+- Un joueur gagne lorsque **tous les héros adverses** sont vaincus.  
+- Le dernier joueur ayant encore des héros en vie remporte la partie.  
+
+---
+
