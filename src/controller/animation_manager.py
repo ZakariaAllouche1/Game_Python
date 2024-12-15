@@ -48,6 +48,7 @@ class AnimationManager:
 
     def draw(self, screen):
         for name, animation in self.animations.items():
+
             screen.blit(animation.image, (animation.x, animation.y))
         # for name, effect in self.effects.items():
         #     effect.draw(screen)

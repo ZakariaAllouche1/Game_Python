@@ -1,57 +1,60 @@
 import pygame
-from pytmx import load_pygame, pytmx
+import sys
 
-# Initialisation de Pygame
+# Initialize pygame
 pygame.init()
 
-# Taille de la fenêtre
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-pygame.display.set_caption("Overlay sur une carte TMX")
+# Set up the screen and fonts
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Scrolling Text Example")
 
-# Couleurs
-RED_OVERLAY = (255, 0, 0, 120)  # Rouge semi-transparent
+font = pygame.font.Font(None, 36)
+text = "Hello, welcome to the fantasy world! This text will scroll if it's too long."
 
-# Chargement de la carte TMX
-tmx_data = load_pygame("../media/map/map_1.tmx")  # Remplace par le chemin de ta carte TMX
+# Define the rect where the text will appear
+text_rect = pygame.Rect(100, 100, 600, 50)  # x, y, width, height
 
-# Calcul des dimensions des tiles
-tile_width = tmx_data.tilewidth
-tile_height = tmx_data.tileheight
+# Variables for scrolling text
+text_surface = font.render(text, True, (255, 255, 255))
+text_width = text_surface.get_width()  # Width of the rendered text
+scroll_speed = 2  # Pixels per frame
 
-# Création d'une surface pour l'overlay (semi-transparent)
-overlay_surface = pygame.Surface((tile_width, tile_height), pygame.SRCALPHA)
-overlay_surface.fill(RED_OVERLAY)
+# Initial position of the text
+x_pos = text_rect.x
+y_pos = text_rect.y
 
-# Fonction pour dessiner la carte
-def draw_map(screen, tmx_data):
-    for layer in tmx_data.visible_layers:
-        if isinstance(layer, pytmx.TiledTileLayer):
-            for x, y, gid in layer:
-                tile = tmx_data.get_tile_image_by_gid(gid)
-                if tile:
-                    screen.blit(tile, (x * tile_width, y * tile_height))
-
-# Boucle principale
+# Main game loop
+clock = pygame.time.Clock()
 running = True
 while running:
+    screen.fill((0, 0, 0))  # Clear the screen with black background
+
+    # Handle events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-    # Effacement de l'écran
-    screen.fill((0, 0, 0))
+    # If the text is wider than the rect, start scrolling
+    if text_width > text_rect.width:
+        x_pos -= scroll_speed  # Move the text to the left
 
-    # Dessiner la carte TMX
-    draw_map(screen, tmx_data)
+        # If the text has completely moved out of the rect, reset position
+        if x_pos + text_width < text_rect.x:
+            x_pos = text_rect.x + text_rect.width
 
-    # Exemple : dessiner un overlay sur la tile (3, 2)
-    overlay_x, overlay_y = 20, 20  # Coordonnées de la tile
-    screen.blit(overlay_surface, (overlay_x * tile_width, overlay_y * tile_height))
+    # Blit the text at the new position
+    screen.blit(text_surface, (x_pos, y_pos))
 
-    # Mettre à jour l'affichage
+    # Draw the bounding rect (for visual reference)
+    pygame.draw.rect(screen, (255, 255, 255), text_rect, 2)  # White border
+
+    # Update the screen
     pygame.display.flip()
 
-# Quitter Pygame
+    # Frame rate
+    clock.tick(60)
+
 pygame.quit()
+sys.exit()

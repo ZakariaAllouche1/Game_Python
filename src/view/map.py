@@ -61,9 +61,8 @@ class Map:
         self.map_layer.zoom = self.__zoom_factor
         self.__group = pyscroll.PyscrollGroup(map_layer=self.map_layer, default_layer=1)
 
-    def update(self, animation_manager):
+    def update(self, animation_manager, current_unit):
         for layer in self.tmx_data.visible_layers:
-
             if isinstance(layer, pytmx.TiledTileLayer):
                 for x, y, gid in layer:
                     tile = self.tmx_data.get_tile_image_by_gid(gid)
@@ -77,6 +76,10 @@ class Map:
                         self.screen.display.blit(zoomed_tile, (zoomed_x, zoomed_y))
 
             if layer.name == "PlayerLayer":
+                # if current_unit is not None:
+                #     anim = animation_manager.get_animation(current_unit.name)
+                #     if anim:
+                #         self.draw_walkable_overlay(anim.get_walkable_tiles(current_unit.movement_range))
                 animation_manager.draw(self.screen.display)
 
     def get_collisions(self):
@@ -91,31 +94,21 @@ class Map:
             elif obj.type == 'Lava':
                 self.lava_tiles.append(pygame.Rect(obj.x * self.zoom_factor, obj.y * self.zoom_factor, obj.width * self.zoom_factor, obj.height * self.zoom_factor))
 
+    def draw_walkable_overlay(self, walkable_tiles):
+        settings = Settings()
+        for x, y in walkable_tiles:
+            tile_x = x * settings.tile_width * self.zoom_factor
+            tile_y = y * settings.tile_height * self.zoom_factor
+            overlay_color = (0, 255, 0, 128)
+            overlay_surface = pygame.Surface(
+                (int(settings.tile_width * self.zoom_factor), int(settings.tile_height * self.zoom_factor)), pygame.SRCALPHA
+            )
+            overlay_surface.fill(overlay_color)
+            self.screen.display.blit(overlay_surface, (tile_x, tile_y))
 
+    def overlay_tile(self, x, y, color):
+        settings = Settings()
+        overlay_surface = pygame.Surface((settings.tile_width, settings.tile_height), pygame.SRCALPHA)
+        overlay_surface.fill(color)
 
-    # def tile_type(self, x, y):
-    #     settings = Settings()
-    #     # Calculate tile indices (column, row)
-    #     tile_x = x // settings.tile_width
-    #     tile_y = y // settings.tile_height
-    #
-    #     # Retrieve the tile from a specific layer
-    #     layers = [self.tmx_data.get_layer_by_name("lava"), self.tmx_data.get_layer_by_name("ice")]
-    #     for layer in layers:
-    #         if layer is not None:
-    #             if 0 <= tile_x < self.tmx_data.width and 0 <= tile_y < self.tmx_data.height:
-    #                 tile_gid = layer.data[tile_y][tile_x]
-    #             else:
-    #                 tile_gid = 0  # No tile
-    #
-    #             # Check if the tile exists
-    #             if tile_gid != 0:  # 0 means no tile at this location
-    #                 # Get the properties of the tile via its GID
-    #                 tile_properties = self.tmx_data.get_tile_properties_by_gid(tile_gid)
-    #
-    #                 if tile_properties is not None:
-    #                     # Access the "class" property (or return "undefined" if not set)
-    #                     return tile_properties.get("class", "undefined")
-    #             else:
-    #                 return "undefined"  # No tile found at the given position
-
+        self.screen.display.blit(overlay_surface, (x * settings.tile_width, y * settings.tile_height))

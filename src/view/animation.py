@@ -82,13 +82,6 @@ class Animation:
         return False
 
     def get_walkable_tiles(self, movement_range):
-        """
-        Retourne une liste de tiles accessibles centrées autour du sprite.
-        sprite_rect: pygame.Rect - rectangle du sprite.
-        movement_range: (int, int, int) - (vertical, horizontal, diagonal).
-        tile_width, tile_height: Dimensions d'une tile.
-        zoom_factor: Facteur de zoom appliqué à la carte.
-        """
         settings = Settings()
         vertical, horizontal, diagonal = movement_range
 

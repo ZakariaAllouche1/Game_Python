@@ -96,14 +96,11 @@ class MenuHandler:
 
                 self.set_player = True
 
-        print(self.current_player, self.selected_units)
+        # print(self.current_player, self.selected_units)
         return None
 
-    def start(self, handler, clock, unit, map, animation_manager):
+    def start(self, clock):
         pygame.init()
-
-        # Initialisation
-        is_running = True
         pressed = False
 
         # Configuration
@@ -168,10 +165,9 @@ class MenuHandler:
         # Initialization
         is_running = True
         active = False
-        font = pygame.font.Font(None, 36)
-        text = ""  # Text entered by the user
+        font = pygame.font.Font('../media/EagleLake-Regular.ttf', 30)
+        text = ""
 
-        # Input Box Configuration
         try:
             input_button = pygame.image.load('../media/UI/input.png')
             input_button = pygame.transform.scale(input_button, (400, 150))
@@ -199,7 +195,6 @@ class MenuHandler:
             print(f"Error loading button image: {e}")
             return
 
-        # Clock for controlling frame rate
         clock = pygame.time.Clock()
 
         while is_running:
